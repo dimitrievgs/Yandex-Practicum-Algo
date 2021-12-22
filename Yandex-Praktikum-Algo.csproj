@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Yandex_Praktikum_Algo</RootNamespace>
+    <AssemblyName>Yandex Praktikum</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Ready\A+B.cs" />
+    <Compile Remove="Ready\Example1.cs" />
+    <Compile Remove="Ready\Example2.cs" />
+    <Compile Remove="Ready\Example3.cs" />
+    <Compile Remove="Ready\Skol%27zyashchee srednee.cs" />
+    <Compile Remove="Ready\Zastyozhka-molniya.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Ready\Example1.cs" />
+    <Resource Include="Ready\Example2.cs" />
+    <Resource Include="Ready\Example3.cs" />
+    <None Include="Ready\A+B.cs" />
+    <None Include="Ready\Example1.cs" />
+    <None Include="Ready\Example2.cs" />
+    <None Include="Ready\Example3.cs" />
+    <None Include="Ready\Skol'zyashchee srednee.cs" />
+    <None Include="Ready\Zastyozhka-molniya.cs" />
+  </ItemGroup>
+
+</Project>

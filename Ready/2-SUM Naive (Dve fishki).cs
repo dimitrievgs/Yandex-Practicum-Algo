@@ -17,22 +17,22 @@ public class Solution
         var numbers = ReadList();
         var k = ReadInt();
 
-        int left = 0, right = n - 1;
         int i1 = 0, i2 = 0;
         bool success = false;
-        while (left != right)
+        for (int i = 0; i < n - 1; i++)
         {
-            if (numbers[left] + numbers[right] == k)
+            for (int j = i + 1; j < n; j++)
             {
-                i1 = left;
-                i2 = right;
-                success = true;
-                break;
+                if (numbers[i] + numbers[j] == k)
+                {
+                    i1 = i;
+                    i2 = j;
+                    success = true;
+                    break;
+                }
             }
-            else if (numbers[left] + numbers[right] < k)
-                left += 1;
-            else
-                right -= 1;
+            if (success)
+                break;
         }
         if (success)
             writer.Write(numbers[i1] + " " + numbers[i2]);

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Ready\2-SUM Naive (Dve fishki).cs" />
     <Compile Remove="Ready\A+B.cs" />
     <Compile Remove="Ready\Example1.cs" />
     <Compile Remove="Ready\Example2.cs" />
@@ -21,6 +22,7 @@
     <Resource Include="Ready\Example2.cs" />
     <Resource Include="Ready\Example3.cs" />
     <None Include="Ready\A+B.cs" />
+    <None Include="Ready\2-SUM Naive %28Dve fishki%29.cs" />
     <None Include="Ready\Example1.cs" />
     <None Include="Ready\Example2.cs" />
     <None Include="Ready\Example3.cs" />

@@ -32,6 +32,7 @@
     <Compile Remove="S2\S2TE-Всё-наоборот.cs" />
     <Compile Remove="S2\S2TF-maxstack.cs" />
     <Compile Remove="S2\S2TG-stack-maxeffective.cs" />
+    <Compile Remove="S2\S2TH-Скобочная-последовательность.cs" />
     <Compile Remove="S2\Solution.cs" />
   </ItemGroup>
 
@@ -56,6 +57,7 @@
     <None Include="S2\S2TE-Всё-наоборот.cs" />
     <None Include="S2\S2TG-stack-maxeffective.cs" />
     <None Include="S2\S2TF-maxstack.cs" />
+    <None Include="S2\S2TH-Скобочная-последовательность.cs" />
     <None Include="S2\Solution.cs" />
   </ItemGroup>
 

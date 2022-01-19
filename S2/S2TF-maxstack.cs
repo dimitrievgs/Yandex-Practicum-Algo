@@ -8,14 +8,14 @@ public class Solution
 {
     private static TextReader reader;
     private static TextWriter writer;
-    private static StackMaxEffective stack;
+    private static StackMax stack;
 
     public static void Main(string[] args)
     {
         reader = new StreamReader(Console.OpenStandardInput());
         writer = new StreamWriter(Console.OpenStandardOutput());
 
-        stack = new StackMaxEffective();
+        stack = new StackMax();
         int commandNr = ReadInt();
         for (int i = 0; i < commandNr; i++)
         {
@@ -59,94 +59,32 @@ public class Solution
     }
 }
 
-public class StackMaxEffective
+public class StackMax
 {
-    Stack<int> stack;
-    Stack<ListNode<int>> maxStack;
+    ListNode<int> head;
 
-    public StackMaxEffective()
-    {
-        stack = new Stack<int>();
-        maxStack = new Stack<ListNode<int>>();
-    }
-
-    public void push(int x)
-    {
-        ListNode<int> node = stack.push(x);
-        ListNode<int> maxValue = maxStack.peekValue();
-        if (maxValue == null || maxValue.Value < x)
-            maxStack.push(node);
-    }
-
-    public void pop()
-    {
-        ListNode<int> oldHead = stack.pop();
-        ListNode<int> maxTopNode = maxStack.peekValue();
-        if (oldHead != null && oldHead == maxTopNode)
-        {
-            maxStack.pop();
-        }
-    }
-
-    public void get_max()
-    {
-        ListNode<int> maxTopNode = maxStack.peekValue();
-        string result = (maxTopNode != null) ? maxTopNode.Value.ToString() : "None";
-        Console.WriteLine(result);
-    }
-}
-
-public class Stack<TValue>
-{
-    ListNode<TValue> head;
-
-    public Stack()
+    public StackMax()
     {
         head = null;
     }
 
-    public ListNode<TValue> push(TValue x)
+    public void push(int x)
     {
-        ListNode<TValue> node = new ListNode<TValue>(x, head);
-        head = node;
-        return node;
-    }
-
-    public void push(ListNode<TValue> node)
-    {
-        node.Next = head;
+        ListNode<int> node = new ListNode<int>(x, head);
         head = node;
     }
 
-    public ListNode<TValue> pop()
+    public void pop()
     {
         if (head != null)
-        {
-            ListNode<TValue> oldHead = head;
             head = head.Next;
-            return oldHead;
-        }
         else
-        {
             Console.WriteLine("error");
-            return null;
-        }
     }
 
-    public TValue peekValue()
+    public void get_max()
     {
-        TValue value = (head != null) ? head.Value : default(TValue);
-        return value;
-    }
-
-    public ListNode<TValue> peekNode()
-    {
-        return head;
-    }
-
-    /*public void get_max()
-    {
-        ListNode<TValue> node = head;
+        ListNode<int> node = head;
         int maxEl = int.MinValue;
         while (node != null)
         {
@@ -155,7 +93,7 @@ public class Stack<TValue>
         }
         string result = (maxEl > int.MinValue) ? maxEl.ToString() : "None";
         Console.WriteLine(result);
-    }*/
+    }
 }
 
 public class ListNode<TValue>

@@ -30,6 +30,8 @@
     <Compile Remove="S2\S2TC-Нелюбимое-дело.cs" />
     <Compile Remove="S2\S2TD-Заботливая-мама.cs" />
     <Compile Remove="S2\S2TE-Всё-наоборот.cs" />
+    <Compile Remove="S2\S2TF-maxstack.cs" />
+    <Compile Remove="S2\S2TG-stack-maxeffective.cs" />
     <Compile Remove="S2\Solution.cs" />
   </ItemGroup>
 
@@ -52,6 +54,8 @@
     <None Include="S2\S2TC-Нелюбимое-дело.cs" />
     <None Include="S2\S2TD-Заботливая-мама.cs" />
     <None Include="S2\S2TE-Всё-наоборот.cs" />
+    <None Include="S2\S2TG-stack-maxeffective.cs" />
+    <None Include="S2\S2TF-maxstack.cs" />
     <None Include="S2\Solution.cs" />
   </ItemGroup>
 

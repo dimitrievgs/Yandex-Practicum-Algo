@@ -1,87 +1,162 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-
-// закомментируйте перед отправкой
-
-/*public class Node<TValue>
-{
-    public TValue Value { get; private set; }
-    public Node<TValue> Next { get; set; }
-    public Node<TValue> Prev { get; set; }
-
-    public Node(TValue value, Node<TValue> next, Node<TValue> prev)
-    {
-        Value = value;
-        if (next != null)
-        {
-            Next = next;
-            next.Prev = this;
-        }
-        if (prev != null)
-        {
-            Prev = prev;
-            prev.Next = this;
-        }
-    }
-}*/
-
+using System.Linq;
+using System.Text;
 
 public class Solution
 {
     private static TextReader reader;
     private static TextWriter writer;
+    private static StackMaxEffective stack;
 
-    /*public static void Main(string[] args)
+    public static void Main(string[] args)
     {
         reader = new StreamReader(Console.OpenStandardInput());
         writer = new StreamWriter(Console.OpenStandardOutput());
 
-        int n = ReadInt();
-        Node<string> node = null, head = null;
-        for (int i = 0; i < n; i++)
+        stack = new StackMaxEffective();
+        int commandNr = ReadInt();
+        for (int i = 0; i < commandNr; i++)
         {
-            string s = reader.ReadLine();
-            node = new Node<string>(s, null, node);
-            if (i == 0)
-                head = node;
+            string command = reader.ReadLine();
+            ParseCommand(command);
         }
-        //writer.WriteLine("---");
-        var newNode = Solve(head);
-
 
         reader.Close();
         writer.Close();
+    }
+
+    private static void ParseCommand(string command)
+    {
+        string[] commandParts = command.Split(' ');
+        int parameter = commandParts.Length > 1 ? int.Parse(commandParts[1]) : 0;
+        switch (commandParts[0])
+        {
+            case "get_max":
+                stack.get_max();
+                break;
+            case "push":
+                stack.push(parameter);
+                break;
+            case "pop":
+                stack.pop();
+                break;
+        }
     }
 
     private static int ReadInt()
     {
         return int.Parse(reader.ReadLine());
     }
-    */
-    public static Node<string> Solve(Node<string> head)
+
+    private static int[] ReadArray()
     {
-        Node<string> node = head;
+        return reader.ReadLine()
+            .Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToArray();
+    }
+}
 
-        while (node.Next != null)
+public class StackMaxEffective
+{
+    Stack stack;
+    Stack maxStack;
+
+    public void push(int x)
+    {
+        ListNode<int> node = stack.push(x);
+        int maxValue = maxStack.peekValue();
+        if (maxValue < x)
+            maxStack.push(node);
+    }
+
+    public void pop()
+    {
+        ListNode<int> oldHead = stack.pop();
+        ListNode<int> maxTopNode = maxStack.peekNode();
+        if (oldHead != null && oldHead == maxTopNode)
         {
-            Node<string> prevNode = node.Prev, nextNode = node.Next;
-            node.Prev = nextNode;
-            node.Next = prevNode;
-            node = nextNode;
+            maxStack.pop();
         }
-        node.Next = node.Prev;
-        node.Prev = null;
+    }
 
-        /*Node<string> curr = node;
-        while (curr != null)
-        {
-            Console.WriteLine(curr.Value);
-            curr = curr.Next;
-        }*/
+    public void get_max()
+    {
+        return maxStack.peekValue();
+    }
+}
 
-        //Console.WriteLine("---");
+public class Stack
+{
+    ListNode<int> head;
+
+    public Stack()
+    {
+        head = null;
+    }
+
+    public ListNode<int> push(int x)
+    {
+        ListNode<int> node = new ListNode<int>(x, head);
+        head = node;
         return node;
+    }
+
+    public void push(ListNode<int> node)
+    {
+        node.Next = head;
+        head = node;
+    }
+
+    public ListNode<int> pop()
+    {
+        if (head != null)
+        {
+            ListNode<int> oldHead = head;
+            head = head.Next;
+            return oldHead;
+        }
+        else
+        {
+            Console.WriteLine("error");
+            return null;
+        }
+    }
+
+    public int peekValue()
+    {
+        return head.Value;
+    }
+
+    public ListNode<int> peekNode()
+    {
+        return head;
+    }
+
+    public void get_max()
+    {
+        ListNode<int> node = head;
+        int maxEl = int.MinValue;
+        while (node != null)
+        {
+            maxEl = Math.Max(maxEl, node.Value);
+            node = node.Next;
+        }
+        string result = (maxEl > int.MinValue) ? maxEl.ToString() : "None";
+        Console.WriteLine(result);
+    }
+}
+
+public class ListNode<TValue>
+{
+    public TValue Value;
+    public ListNode<TValue> Next;
+
+    public ListNode(TValue value, ListNode<TValue> next)
+    {
+        Value = value;
+        Next = next;
     }
 }

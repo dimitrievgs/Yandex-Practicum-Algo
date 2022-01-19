@@ -72,14 +72,14 @@ public class Solution
             node = nextNode;
         }
         node.Next = node.Prev;
-        node.Prev = null; 
+        node.Prev = null;
 
-        Node<string> curr = node;
+        /*Node<string> curr = node;
         while (curr != null)
         {
             Console.WriteLine(curr.Value);
             curr = curr.Next;
-        }
+        }*/
 
         //Console.WriteLine("---");
         return node;

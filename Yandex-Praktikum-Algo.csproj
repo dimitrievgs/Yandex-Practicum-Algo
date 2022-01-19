@@ -10,13 +10,27 @@
   <ItemGroup>
     <Compile Remove="Dimitriev-Sprint1\sprint1-task1.cs" />
     <Compile Remove="Dimitriev-Sprint1\sprint1-task2.cs" />
-    <Compile Remove="Ready\2-SUM Naive (Dve fishki).cs" />
     <Compile Remove="Ready\A+B.cs" />
     <Compile Remove="Ready\Example1.cs" />
     <Compile Remove="Ready\Example2.cs" />
     <Compile Remove="Ready\Example3.cs" />
+    <Compile Remove="Ready\S2TA-transpose.cs" />
+    <Compile Remove="S1\2-SUM Naive %28Dve fishki%29.cs" />
+    <Compile Remove="S1\A+B.cs" />
+    <Compile Remove="S1\Example1.cs" />
+    <Compile Remove="S1\Example2.cs" />
+    <Compile Remove="S1\Example3.cs" />
+    <Compile Remove="S1\Skol%27zyashchee srednee.cs" />
     <Compile Remove="Ready\Skol%27zyashchee srednee.cs" />
     <Compile Remove="Ready\Zastyozhka-molniya.cs" />
+    <Compile Remove="S1\Zastyozhka-molniya.cs" />
+    <Compile Remove="S2\ListTemplate.cs" />
+    <Compile Remove="S2\S2TA-transpose.cs" />
+    <Compile Remove="S2\S2TB-write-list.cs" />
+    <Compile Remove="S2\S2TC-Нелюбимое-дело.cs" />
+    <Compile Remove="S2\S2TD-Заботливая-мама.cs" />
+    <Compile Remove="S2\S2TE-Всё-наоборот.cs" />
+    <Compile Remove="S2\Solution.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,13 +39,20 @@
     <Resource Include="Ready\Example3.cs" />
     <None Include="Dimitriev-Sprint1\sprint1-task1.cs" />
     <None Include="Dimitriev-Sprint1\sprint1-task2.cs" />
-    <None Include="Ready\A+B.cs" />
-    <None Include="Ready\2-SUM Naive %28Dve fishki%29.cs" />
-    <None Include="Ready\Example1.cs" />
-    <None Include="Ready\Example2.cs" />
-    <None Include="Ready\Example3.cs" />
-    <None Include="Ready\Skol'zyashchee srednee.cs" />
-    <None Include="Ready\Zastyozhka-molniya.cs" />
+    <None Include="S1\2-SUM Naive (Dve fishki).cs" />
+    <None Include="S1\A+B.cs" />
+    <None Include="S1\Example1.cs" />
+    <None Include="S1\Example2.cs" />
+    <None Include="S1\Example3.cs" />
+    <None Include="S1\Skol'zyashchee srednee.cs" />
+    <None Include="S1\Zastyozhka-molniya.cs" />
+    <None Include="S2\ListTemplate.cs" />
+    <None Include="S2\S2TA-transpose.cs" />
+    <None Include="S2\S2TB-write-list.cs" />
+    <None Include="S2\S2TC-Нелюбимое-дело.cs" />
+    <None Include="S2\S2TD-Заботливая-мама.cs" />
+    <None Include="S2\S2TE-Всё-наоборот.cs" />
+    <None Include="S2\Solution.cs" />
   </ItemGroup>
 
 </Project>

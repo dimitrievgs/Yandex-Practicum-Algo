@@ -47,6 +47,7 @@
     <Compile Remove="S2\S2TG-stack-maxeffective.cs" />
     <Compile Remove="S2\S2TH-Скобочная-последовательность.cs" />
     <Compile Remove="S2\S2TI-Ограниченная-очередь.cs" />
+    <Compile Remove="S2\S2TJ-Списочная очередь.cs" />
     <Compile Remove="S2\Solution.cs" />
   </ItemGroup>
 
@@ -54,6 +55,7 @@
     <Resource Include="Ready\Example1.cs" />
     <Resource Include="Ready\Example2.cs" />
     <Resource Include="Ready\Example3.cs" />
+    <None Include="S2\S2TJ-Списочная очередь.cs" />
     <None Include="Dimitriev-Sprint1\sprint1-task1.cs" />
     <None Include="Dimitriev-Sprint1\sprint1-task2.cs" />
     <None Include="S0\2-SUM Naive (Dve fishki).cs" />

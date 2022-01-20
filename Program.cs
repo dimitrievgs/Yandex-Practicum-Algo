@@ -13,11 +13,12 @@ public class Solution
         reader = new StreamReader(Console.OpenStandardInput());
         writer = new StreamWriter(Console.OpenStandardOutput());
 
+        ListQueue<int> listQueue = new ListQueue<int>();
         int n = ReadInt();
-        int size = ReadInt();
-        CircleQueue<int> queue = new CircleQueue<int>(size);
         for (int i = 0; i < n; i++)
-            ReadCommand(queue);
+        {
+            ParseCommand(listQueue);
+        }
 
         reader.Close();
         writer.Close();
@@ -28,92 +29,87 @@ public class Solution
         return int.Parse(reader.ReadLine());
     }
 
-    private static void ReadCommand(CircleQueue<int> queue)
+    private static void ParseCommand(ListQueue<int> listQueue)
     {
-        string[] commandParts = reader.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] commandParts = reader.ReadLine()
+            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         string command = commandParts[0];
         int parameter = (commandParts.Length > 1) ? int.Parse(commandParts[1]) : 0;
         string el = "";
         switch (command)
         {
-            case "push":
-                el = queue.push(parameter);
-                if (!String.IsNullOrEmpty(el))
-                    writer.WriteLine(el);
-                break;
-            case "pop":
-                el = queue.pop();
+            case "get":
+                el = listQueue.get();
                 writer.WriteLine(el);
                 break;
-            case "peek":
-                el = queue.peek();
-                writer.WriteLine(el);
+            case "put":
+                listQueue.put(parameter);
                 break;
             case "size":
-                int size = queue.size();
-                writer.WriteLine(size);
+                writer.WriteLine(listQueue.size());
                 break;
         }
     }
 }
 
-public class CircleQueue<TValue>
+public class ListQueue<TValue>
 {
-    private TValue[] array;
-    private int head;
-    private int tail;
-    private int arSize;
-    private int max_n;
+    private Node<TValue> head;
+    private Node<TValue> tail;
+    private int listSize;
 
-    public CircleQueue(int n)
+    public ListQueue()
     {
-        array = new TValue[n];
-        max_n = n;
-        head = 0;
-        tail = 0;
-        arSize = 0;
+        head = null;
+        tail = null;
+        listSize = 0;
     }
 
-    public string push(TValue x)
+    public string get()
     {
-        if (arSize < max_n)
-        {
-            array[tail] = x;
-            tail = (tail + 1) % max_n;
-            arSize += 1;
-            return "";
-        }
-        else
+        if (isEmpty())
             return "error";
-    }
-
-    public string pop()
-    {
-        if (isEmpty())
-            return "None";
-        TValue oldValue = array[head];
-        array[head] = default(TValue);
-        head = (head + 1) % max_n;
-        arSize -= 1;
-        return oldValue.ToString();
-    }
-
-    public string peek()
-    {
-        if (isEmpty())
-            return "None";
         else
-            return array[head].ToString();
+        {
+            TValue value = head.Value;
+            head = head.Next;
+            listSize -= 1;
+            if (listSize == 0)
+                tail = null;
+            return value.ToString();
+        }
+    }
+
+    public void put(TValue x)
+    {
+        Node<TValue> node = new Node<TValue>(x, null);
+        if (isEmpty())
+            head = node;
+        else
+            tail.Next = node;
+        tail = node;
+        listSize += 1;
     }
 
     public int size()
     {
-        return arSize;
+        return listSize;
     }
 
     public bool isEmpty()
     {
-        return arSize == 0;
+        return listSize == 0;
     }
 }
 
+public class Node<TValue>
+{
+    public TValue Value;
+    public Node<TValue> Next;
+
+    public Node(TValue value, Node<TValue> next)
+    {
+        Value = value;
+        Next = next;
+    }
+}

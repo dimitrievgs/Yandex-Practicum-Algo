@@ -1,6 +1,4 @@
-﻿/*
- * Для начала научимся считывать пару чисел, которые записаны в одной строке
- */
+﻿//https://contest.yandex.ru/contest/26365/problems/A/
 
 using System;
 using System.Collections.Generic;
@@ -17,11 +15,20 @@ public class Solution
         reader = new StreamReader(Console.OpenStandardInput());
         writer = new StreamWriter(Console.OpenStandardOutput());
 
-        var numbers = ReadList();
-        writer.WriteLine(numbers[0] + numbers[1]);
+        var n1 = ReadInt();
+        var n2 = ReadInt();
+
+        int n3 = n1 + n2;
+
+        writer.Write(n3);
 
         reader.Close();
         writer.Close();
+    }
+
+    private static int ReadInt()
+    {
+        return int.Parse(reader.ReadLine());
     }
 
     private static List<int> ReadList()

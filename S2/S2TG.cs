@@ -143,6 +143,19 @@ public class Stack<TValue>
     {
         return head;
     }
+
+    /*public void get_max()
+    {
+        ListNode<TValue> node = head;
+        int maxEl = int.MinValue;
+        while (node != null)
+        {
+            maxEl = Math.Max(maxEl, node.Value);
+            node = node.Next;
+        }
+        string result = (maxEl > int.MinValue) ? maxEl.ToString() : "None";
+        Console.WriteLine(result);
+    }*/
 }
 
 public class ListNode<TValue>

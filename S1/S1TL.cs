@@ -1,9 +1,9 @@
-﻿/*
- * Здесь мы привели решения задачи A+B
- */
-
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 public class Solution
 {
@@ -15,16 +15,13 @@ public class Solution
         reader = new StreamReader(Console.OpenStandardInput());
         writer = new StreamWriter(Console.OpenStandardOutput());
 
-        var a = ReadInt();
-        var b = ReadInt();
-        writer.WriteLine(a + b);
+        List<char> s = reader.ReadLine().ToCharArray().ToList();
+        List<char> t = reader.ReadLine().ToCharArray().ToList();
+        foreach (char c in s)
+            t.Remove(c);
+        writer.WriteLine(string.Join(" ", t));
 
         reader.Close();
         writer.Close();
-    }
-
-    private static int ReadInt()
-    {
-        return int.Parse(reader.ReadLine());
     }
 }

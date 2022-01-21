@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.IO;
+using System.Collections.Generic;
 
 public class Solution
 {
@@ -13,12 +13,8 @@ public class Solution
         reader = new StreamReader(Console.OpenStandardInput());
         writer = new StreamWriter(Console.OpenStandardOutput());
 
-        var n1 = ReadInt();
-        var n2 = ReadInt();
-
-        int n3 = n1 + n2;
-
-        writer.Write(n3);
+        var n = ReadInt();
+        writer.WriteLine(RecursiveFibonacci(n));
 
         reader.Close();
         writer.Close();
@@ -29,11 +25,11 @@ public class Solution
         return int.Parse(reader.ReadLine());
     }
 
-    private static List<int> ReadList()
+    private static int RecursiveFibonacci(int n)
     {
-        return reader.ReadLine()
-            .Split(new[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(int.Parse)
-            .ToList();
+        if (n == 0 || n == 1)
+            return 1;
+        else
+            return RecursiveFibonacci(n - 1) + RecursiveFibonacci(n - 2);
     }
 }

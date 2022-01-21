@@ -1,10 +1,4 @@
-﻿/*
-    Эта задача без изменений
-	ID 63940875	
-    отчёт https://contest.yandex.ru/contest/22450/run-report/63940875/
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;

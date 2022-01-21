@@ -13,12 +13,12 @@ public class Solution
         reader = new StreamReader(Console.OpenStandardInput());
         writer = new StreamWriter(Console.OpenStandardOutput());
 
-        ListQueue<int> listQueue = new ListQueue<int>();
-        int n = ReadInt();
-        for (int i = 0; i < n; i++)
-        {
-            ParseCommand(listQueue);
-        }
+        var array = ReadArray();
+        var n = array[0];
+        var k = array[1];
+        var d = (int)Math.Pow(10, k);
+        var fib = Fibonacci(n, d);
+        writer.WriteLine(fib);
 
         reader.Close();
         writer.Close();
@@ -29,87 +29,25 @@ public class Solution
         return int.Parse(reader.ReadLine());
     }
 
-    private static void ParseCommand(ListQueue<int> listQueue)
+    private static int[] ReadArray()
     {
-        string[] commandParts = reader.ReadLine()
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        string command = commandParts[0];
-        int parameter = (commandParts.Length > 1) ? int.Parse(commandParts[1]) : 0;
-        string el = "";
-        switch (command)
+        return reader.ReadLine()
+            .Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToArray();
+    }
+
+    private static int Fibonacci(int n, int d)
+    {
+        int a = 1;
+        int b = 1;
+        for (int i = 0; i < n; i++)
         {
-            case "get":
-                el = listQueue.get();
-                writer.WriteLine(el);
-                break;
-            case "put":
-                listQueue.put(parameter);
-                break;
-            case "size":
-                writer.WriteLine(listQueue.size());
-                break;
+            int a2 = b;
+            int b2 = a + b;
+            a = a2 % d;
+            b = b2 % d;
         }
-    }
-}
-
-public class ListQueue<TValue>
-{
-    private Node<TValue> head;
-    private Node<TValue> tail;
-    private int listSize;
-
-    public ListQueue()
-    {
-        head = null;
-        tail = null;
-        listSize = 0;
-    }
-
-    public string get()
-    {
-        if (isEmpty())
-            return "error";
-        else
-        {
-            TValue value = head.Value;
-            head = head.Next;
-            listSize -= 1;
-            if (listSize == 0)
-                tail = null;
-            return value.ToString();
-        }
-    }
-
-    public void put(TValue x)
-    {
-        Node<TValue> node = new Node<TValue>(x, null);
-        if (isEmpty())
-            head = node;
-        else
-            tail.Next = node;
-        tail = node;
-        listSize += 1;
-    }
-
-    public int size()
-    {
-        return listSize;
-    }
-
-    public bool isEmpty()
-    {
-        return listSize == 0;
-    }
-}
-
-public class Node<TValue>
-{
-    public TValue Value;
-    public Node<TValue> Next;
-
-    public Node(TValue value, Node<TValue> next)
-    {
-        Value = value;
-        Next = next;
+        return a;
     }
 }

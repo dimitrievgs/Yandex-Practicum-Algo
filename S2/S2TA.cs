@@ -1,4 +1,6 @@
-﻿using System;
+﻿//https://contest.yandex.ru/contest/22779/problems/A/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;

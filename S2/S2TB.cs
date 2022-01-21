@@ -7,7 +7,7 @@ public class Solution<TValue>
 {
     public static void Solve(Node<TValue> head)
     {
-        Node<TValue> node = head;
+        var node = head;
         do
         {
             Console.WriteLine(node.Value);

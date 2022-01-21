@@ -1,8 +1,4 @@
-﻿/*
- * Считывание массивов
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,11 +15,29 @@ public class Solution
 
         var n = ReadInt();
         var numbers = ReadList();
+        var k = ReadInt();
 
-        for (var i = 0; i < n; i++)
+        int left = 0, right = n - 1;
+        int i1 = 0, i2 = 0;
+        bool success = false;
+        while (left != right)
         {
-            writer.Write("{0} ", numbers[i]);
+            if (numbers[left] + numbers[right] == k)
+            {
+                i1 = left;
+                i2 = right;
+                success = true;
+                break;
+            }
+            else if (numbers[left] + numbers[right] < k)
+                left += 1;
+            else
+                right -= 1;
         }
+        if (success)
+            writer.Write(numbers[i1] + " " + numbers[i2]);
+        else
+            writer.Write("None");
 
         reader.Close();
         writer.Close();

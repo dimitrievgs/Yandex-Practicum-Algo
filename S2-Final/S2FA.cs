@@ -1,6 +1,8 @@
-﻿//https://contest.yandex.ru/contest/22781/enter/
+﻿/*
+ID 64211843
+отчёт https://contest.yandex.ru/contest/22781/run-report/64211843/
+задача https://contest.yandex.ru/contest/22781/problems/A/
 
-/*
 -- ПРИНЦИП РАБОТЫ --
 Поскольку нужно, чтобы операция выполнялись как O(1), для реализации дека
 использую закольцованный массив. Использование массива позволит обращаться 

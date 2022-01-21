@@ -114,7 +114,7 @@ public class Deque<TValue>
         else
         {
             if (!IsEmpty())
-                head = (head - 1 + nMax) % nMax; 
+                head = (head - 1 + nMax) % nMax;
             array[head] = value;
             filledCells += 1;
         }

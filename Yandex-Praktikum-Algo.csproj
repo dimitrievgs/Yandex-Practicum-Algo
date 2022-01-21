@@ -41,6 +41,8 @@
     <Compile Remove="Ready\Skol%27zyashchee srednee.cs" />
     <Compile Remove="Ready\Zastyozhka-molniya.cs" />
     <Compile Remove="S1\Zastyozhka-molniya.cs" />
+    <Compile Remove="S2-Final\S2FA.cs" />
+    <Compile Remove="S2-Final\S2FB.cs" />
     <Compile Remove="S2\S2TA.cs" />
     <Compile Remove="S2\S2TB.cs" />
     <Compile Remove="S2\S2TC.cs" />
@@ -67,6 +69,8 @@
     <None Include="S1\S1TD.cs" />
     <None Include="S1\S1TE.cs" />
     <None Include="S1\S1TF.cs" />
+    <None Include="S2-Final\S2FA.cs" />
+    <None Include="S2-Final\S2FB.cs" />
   </ItemGroup>
 
   <ItemGroup>

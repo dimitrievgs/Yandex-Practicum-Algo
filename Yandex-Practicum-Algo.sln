@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yandex-Praktikum-Algo", "Yandex-Praktikum-Algo.csproj", "{6097CB63-FD09-4755-858B-1DB34449D272}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yandex-Practicum-Algo", "Yandex-Practicum-Algo.csproj", "{6097CB63-FD09-4755-858B-1DB34449D272}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

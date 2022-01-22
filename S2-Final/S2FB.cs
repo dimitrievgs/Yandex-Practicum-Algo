@@ -1,6 +1,6 @@
 ﻿/*
-ID 64247257
-отчёт https://contest.yandex.ru/contest/22781/run-report/64247257/
+ID 64267102
+отчёт https://contest.yandex.ru/contest/22781/run-report/64267102/
 задача https://contest.yandex.ru/contest/22781/problems/B/
 
 -- ПРИНЦИП РАБОТЫ --
@@ -22,7 +22,9 @@ ID 64247257
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
 Пространственная сложность O(n), т.к. на n входящих операндов мы храним в стеке в каждом 
 узле значение и ссылку на следующий узел. Остальные переменные занимают константный объём памяти.
-*/
+-- ПРАВКИ --
+Выправил сигнатуры pop() и push(x)
+ */
 
 
 using System;
@@ -42,37 +44,42 @@ public class Solution
         writer = new StreamWriter(Console.OpenStandardOutput());
 
         string[] input = reader.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        int result = 0;
         stack = new Stack<int>();
-        foreach (string s in input)
+        try
         {
-            if (char.IsDigit(s[s.Length - 1])) //операнды
-                stack.Push(int.Parse(s));
-            else //операторы
+            foreach (string s in input)
             {
-                int[] operands = new int[2];
-                for (int i = 1; i >= 0; i--)
-                    stack.Pop(out operands[i]);
-                int operationResult = 0;
-                switch (s)
+                if (char.IsDigit(s[s.Length - 1])) //операнды
+                    stack.Push(int.Parse(s));
+                else //операторы
                 {
-                    case "+":
-                        operationResult = operands[0] + operands[1];
-                        break;
-                    case "-":
-                        operationResult = operands[0] - operands[1];
-                        break;
-                    case "*":
-                        operationResult = operands[0] * operands[1];
-                        break;
-                    case "/":
-                        operationResult = Divide(operands[0], operands[1]);
-                        break;
+                    int[] operands = new int[2];
+                    for (int i = 1; i >= 0; i--)
+                        operands[i] = stack.Pop();
+                    int operationResult = 0;
+                    switch (s)
+                    {
+                        case "+":
+                            operationResult = operands[0] + operands[1];
+                            break;
+                        case "-":
+                            operationResult = operands[0] - operands[1];
+                            break;
+                        case "*":
+                            operationResult = operands[0] * operands[1];
+                            break;
+                        case "/":
+                            operationResult = Divide(operands[0], operands[1]);
+                            break;
+                    }
+                    stack.Push(operationResult);
                 }
-                stack.Push(operationResult);
             }
+            result = stack.Pop();
         }
-        int result;
-        stack.Pop(out result);
+        catch (InvalidOperationException) //в задаче предполагаются корректные данные на входе
+        { }
         writer.WriteLine(result);
 
         reader.Close();
@@ -103,6 +110,8 @@ public class Stack<TValue>
     Node<TValue> head;
     int size;
 
+    private const string errorMessage = "error";
+
     public Stack()
     {
         size = 0;
@@ -115,20 +124,21 @@ public class Stack<TValue>
         size += 1;
     }
 
-    public bool Pop(out TValue value)
+    public TValue Pop()
     {
+        TValue value;
         if (head != null)
         {
             value = head.Value;
             head = head.Next;
             size -= 1;
-            return true;
         }
         else
         {
             value = default(TValue);
-            return false;
+            throw new InvalidOperationException(errorMessage);
         }
+        return value;
     }
 
     public int Size()

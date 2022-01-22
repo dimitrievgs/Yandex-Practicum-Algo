@@ -1,6 +1,6 @@
 ﻿/*
-ID 
-отчёт 
+ID 64266916
+отчёт https://contest.yandex.ru/contest/22781/run-report/64266916/
 задача https://contest.yandex.ru/contest/22781/problems/A/
 
 -- ПРИНЦИП РАБОТЫ --
@@ -24,6 +24,8 @@ ID
 поочередно помещаем и извлекаем элементы из массива. В пределе это просто N
 если на вход подаётся только push(x). Остальные переменные занимают константный
 объём памяти.
+-- ПРАВКИ --
+Выправил сигнатуры pop<...>() и push<...>(x)
 */
 
 using System;
@@ -64,34 +66,30 @@ public class Solution
             .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         string command = commandParts[0];
         int parameter = (commandParts.Length > 1) ? int.Parse(commandParts[1]) : 0;
-        string result;
         int value;
-        switch (command)
+        try
         {
-            case "push_front":
-                result = deque.PushFront(parameter);
-                if (!string.IsNullOrEmpty(result))
-                    writer.WriteLine(result);
-                break;
-            case "push_back":
-                result = deque.PushBack(parameter);
-                if (!string.IsNullOrEmpty(result))
-                    writer.WriteLine(result);
-                break;
-            case "pop_front":
-                result = deque.PopFront(out value);
-                if (!string.IsNullOrEmpty(result))
-                    writer.WriteLine(result);
-                else
+            switch (command)
+            {
+                case "push_front":
+                    deque.PushFront(parameter);
+                    break;
+                case "push_back":
+                    deque.PushBack(parameter);
+                    break;
+                case "pop_front":
+                    value = deque.PopFront();
                     writer.WriteLine(value);
-                break;
-            case "pop_back":
-                result = deque.PopBack(out value);
-                if (!string.IsNullOrEmpty(result))
-                    writer.WriteLine(result);
-                else
+                    break;
+                case "pop_back":
+                    value = deque.PopBack();
                     writer.WriteLine(value);
-                break;
+                    break;
+            }
+        }
+        catch (InvalidOperationException e)
+        {
+            writer.WriteLine(e.Message);
         }
     }
 }
@@ -115,11 +113,10 @@ public class Deque<TValue>
         filledCells = 0;
     }
 
-    public string PushFront(TValue value)
+    public void PushFront(TValue value)
     {
-        string result = "";
         if (IsFull())
-            result = errorMessage;
+            throw new InvalidOperationException(errorMessage);
         else
         {
             if (!IsEmpty())
@@ -127,14 +124,12 @@ public class Deque<TValue>
             array[head] = value;
             filledCells += 1;
         }
-        return result;
     }
 
-    public string PushBack(TValue value)
+    public void PushBack(TValue value)
     {
-        string result = "";
         if (IsFull())
-            result = errorMessage;
+            throw new InvalidOperationException(errorMessage);
         else
         {
             if (!IsEmpty())
@@ -142,16 +137,15 @@ public class Deque<TValue>
             array[tail] = value;
             filledCells += 1;
         }
-        return result;
     }
 
-    public string PopFront(out TValue value)
+    public TValue PopFront()
     {
-        string result = "";
+        TValue value;
         if (IsEmpty())
         {
             value = default(TValue);
-            result = errorMessage;
+            throw new InvalidOperationException(errorMessage);
         }
         else
         {
@@ -161,16 +155,16 @@ public class Deque<TValue>
                 head = (head + 1) % nMax;
             filledCells -= 1;
         }
-        return result;
+        return value;
     }
 
-    public string PopBack(out TValue value)
+    public TValue PopBack()
     {
-        string result = "";
+        TValue value;
         if (IsEmpty())
         {
             value = default(TValue);
-            result = errorMessage;
+            throw new InvalidOperationException(errorMessage);
         }
         else
         {
@@ -180,7 +174,7 @@ public class Deque<TValue>
                 tail = (tail - 1 + nMax) % nMax;
             filledCells -= 1;
         }
-        return result;
+        return value;
     }
 
     private bool IsFull()

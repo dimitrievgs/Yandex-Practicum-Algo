@@ -1,189 +1,160 @@
 ﻿/*
-ID 64211843
-отчёт https://contest.yandex.ru/contest/22781/run-report/64211843/
-задача https://contest.yandex.ru/contest/22781/problems/A/
+ID 
+отчёт 
+задача https://contest.yandex.ru/contest/22781/problems/B/
 
 -- ПРИНЦИП РАБОТЫ --
-Поскольку нужно, чтобы операция выполнялись как O(1), для реализации дека
-использую закольцованный массив. Использование массива позволит обращаться 
-к любому элементу, если известно его положение, за O(1). А закольцованность 
-позволит избежать проблем при вставке элементов в начало или середину массива 
-(не понадобится сдвигать все, что справа). Дополнительно O(1) гарантируется 
-условиями задачи: согласно ним, не нужно кратно увеличивать размер массива 
-при его заполнении, достаточно выводить error.
+Для реализации стека использую односвязный список. Храню в стеке операторы и операнды. 
+В остальном как в задании: если идёт число, то помещаю в стек как будущий операнд, 
+если следующий элемент - это знак операции, то достаю два последних операнда, 
+осуществляю операцию с ними в порядке их добавления в стек, результат помещаю в стек. 
+В конце получаю результат, просто забирая верхний элемент из стека.
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Поскольку на вход подаётся выражение в обратной польской нотации, то в ней по определению
+уже операнды расположены перед знаками операций, а порядок задаётся порядком следования 
+знаков операций. Поэтому не нужно беспокоиться о приоритетах, и выражение уже адаптировано
+для вычисления с использованием стека.
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Поскольку мы взаимодействуем только с головой односвязного списка, то это гарантирует 
+в данном контексте арифметическую сложность O(1) методов stack.Pop(...) и stack.Push(...).
+Определение размера здесь не требуется, но оно тоже O(1), т.к. для этого используется
+вспомогательная переменная типа int.
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+Пространственная сложность O(n), т.к. на n входящих операндов мы храним в стеке в каждом 
+узле значение и ссылку на следующий узел. Остальные переменные занимают константный объём памяти.
+-- ПРАВКИ --
+Выправил сигнатуры pop() и push(x)
+ */
 
-При реализации закольцованного массива у меня head указывает на первый левый 
-заполненный элемент, а tail на последний правый заполненный элемент (а не на
-пустую ячейку, как в лекциях Яндекса, реализация с курса на stepik
-https://stepik.org/lesson/28869/step/3?unit=9906
-мне показалась удобнее.
-*/
 
 using System;
+using System.Linq;
 using System.IO;
+using System.Collections.Generic;
 
 public class Solution
 {
     private static TextReader reader;
     private static TextWriter writer;
-    private static Deque<int> deque;
+    private static Stack<int> stack;
 
     public static void Main(string[] args)
     {
         reader = new StreamReader(Console.OpenStandardInput());
         writer = new StreamWriter(Console.OpenStandardOutput());
 
-        int n = ReadInt();
-        int m = ReadInt();
-        deque = new Deque<int>(m);
-        for (int i = 0; i < n; i++)
+        string[] input = reader.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        int result = 0;
+        stack = new Stack<int>();
+        try
         {
-            string commandLine = reader.ReadLine();
-            ParseCommand(deque, commandLine);
+            foreach (string s in input)
+            {
+                if (char.IsDigit(s[s.Length - 1])) //операнды
+                    stack.Push(int.Parse(s));
+                else //операторы
+                {
+                    int[] operands = new int[2];
+                    for (int i = 1; i >= 0; i--)
+                        operands[i] = stack.Pop();
+                    int operationResult = 0;
+                    switch (s)
+                    {
+                        case "+":
+                            operationResult = operands[0] + operands[1];
+                            break;
+                        case "-":
+                            operationResult = operands[0] - operands[1];
+                            break;
+                        case "*":
+                            operationResult = operands[0] * operands[1];
+                            break;
+                        case "/":
+                            operationResult = Divide(operands[0], operands[1]);
+                            break;
+                    }
+                    stack.Push(operationResult);
+                }
+            }
+            result = stack.Pop();
         }
+        catch (InvalidOperationException) //в задаче предполагаются корректные данные на входе
+        { }
+        writer.WriteLine(result);
 
         reader.Close();
         writer.Close();
     }
 
-    private static int ReadInt()
+    private static int Divide(int dividend, int divider)
     {
-        return int.Parse(reader.ReadLine());
+        if (divider != 0)
+            return (int)Math.Floor(dividend / (double)divider);
+        else
+        {
+            if (dividend == 0)
+                return 0; //т.к. в int нет NaN, здесь любое число
+            else
+                return int.MaxValue * GetSign(dividend);
+        }
     }
 
-    private static void ParseCommand(Deque<int> deque, string commandLine)
+    private static int GetSign(int value)
     {
-        string[] commandParts = commandLine
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        string command = commandParts[0];
-        int parameter = (commandParts.Length > 1) ? int.Parse(commandParts[1]) : 0;
-        string result;
-        int value;
-        switch (command)
-        {
-            case "push_front":
-                result = deque.PushFront(parameter);
-                if (!string.IsNullOrEmpty(result))
-                    writer.WriteLine(result);
-                break;
-            case "push_back":
-                result = deque.PushBack(parameter);
-                if (!string.IsNullOrEmpty(result))
-                    writer.WriteLine(result);
-                break;
-            case "pop_front":
-                result = deque.PopFront(out value);
-                if (!string.IsNullOrEmpty(result))
-                    writer.WriteLine(result);
-                else
-                    writer.WriteLine(value);
-                break;
-            case "pop_back":
-                result = deque.PopBack(out value);
-                if (!string.IsNullOrEmpty(result))
-                    writer.WriteLine(result);
-                else
-                    writer.WriteLine(value);
-                break;
-        }
+        return (Math.Sign(value) >= 0) ? +1 : -1;
     }
 }
 
-public class Deque<TValue>
+public class Stack<TValue>
 {
-    private TValue[] array;
-    private int nMax;
-    private int head; //для удобства head указывает на первую заполненную ячейку
-    private int tail; //а tail на последнюю заполненную, как предлагается на stepik
-    private int filledCells;
+    Node<TValue> head;
+    int size;
 
     private const string errorMessage = "error";
 
-    public Deque(int n)
+    public Stack()
     {
-        array = new TValue[n];
-        nMax = n;
-        head = 0;
-        tail = 0;
-        filledCells = 0;
+        size = 0;
     }
 
-    public string PushFront(TValue value)
+    public void Push(TValue value)
     {
-        string result = "";
-        if (IsFull())
-            result = errorMessage;
-        else
+        Node<TValue> node = new Node<TValue>(value, head);
+        head = node;
+        size += 1;
+    }
+
+    public TValue Pop()
+    {
+        TValue value;
+        if (head != null)
         {
-            if (!IsEmpty())
-                head = (head - 1 + nMax) % nMax;
-            array[head] = value;
-            filledCells += 1;
+            value = head.Value;
+            head = head.Next;
+            size -= 1;
         }
-        return result;
-    }
-
-    public string PushBack(TValue value)
-    {
-        string result = "";
-        if (IsFull())
-            result = errorMessage;
         else
-        {
-            if (!IsEmpty())
-                tail = (tail + 1) % nMax;
-            array[tail] = value;
-            filledCells += 1;
-        }
-        return result;
-    }
-
-    public string PopFront(out TValue value)
-    {
-        string result = "";
-        if (IsEmpty())
         {
             value = default(TValue);
-            result = errorMessage;
+            throw new InvalidOperationException(errorMessage);
         }
-        else
-        {
-            value = array[head];
-            array[head] = default(TValue);
-            if (filledCells > 1)
-                head = (head + 1) % nMax;
-            filledCells -= 1;
-        }
-        return result;
+        return value;
     }
 
-    public string PopBack(out TValue value)
+    public int Size()
     {
-        string result = "";
-        if (IsEmpty())
-        {
-            value = default(TValue);
-            result = errorMessage;
-        }
-        else
-        {
-            value = array[tail];
-            array[tail] = default(TValue);
-            if (filledCells > 1)
-                tail = (tail - 1 + nMax) % nMax;
-            filledCells -= 1;
-        }
-        return result;
-    }
-
-    private bool IsFull()
-    {
-        return filledCells == nMax;
-    }
-
-    private bool IsEmpty()
-    {
-        return filledCells == 0;
+        return size;
     }
 }
 
+public class Node<TValue>
+{
+    public TValue Value;
+    public Node<TValue> Next;
+
+    public Node(TValue value, Node<TValue> next = null)
+    {
+        Value = value;
+        Next = next;
+    }
+}

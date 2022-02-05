@@ -59,6 +59,10 @@
     <Compile Remove="S3\S3TB.cs" />
     <Compile Remove="S3\S3TC.cs" />
     <Compile Remove="S3\S3TD.cs" />
+    <Compile Remove="S3\S3TE.cs" />
+    <Compile Remove="S3\S3TF.cs" />
+    <Compile Remove="S3\S3TG.cs" />
+    <Compile Remove="S3\S3TH.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,6 +83,10 @@
     <None Include="S3\S3TB.cs" />
     <None Include="S3\S3TC.cs" />
     <None Include="S3\S3TD.cs" />
+    <None Include="S3\S3TE.cs" />
+    <None Include="S3\S3TF.cs" />
+    <None Include="S3\S3TG.cs" />
+    <None Include="S3\S3TH.cs" />
     <None Include="Yandex-Practicum-Algo.sln" />
   </ItemGroup>
 

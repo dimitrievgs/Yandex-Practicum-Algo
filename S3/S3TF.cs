@@ -17,7 +17,6 @@ public class Solution
         int[] segmentsLengths = ReadInts();
 
         segmentsLengths = segmentsLengths.OrderByDescending(o => o).ToArray();
-
         writer.WriteLine(FindMaxPerimeter(segmentsLengths, n));
 
         reader.Close();

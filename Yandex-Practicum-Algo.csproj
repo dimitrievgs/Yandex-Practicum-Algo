@@ -55,6 +55,10 @@
     <Compile Remove="S2\S2TJ.cs" />
     <Compile Remove="S2\S2TK.cs" />
     <Compile Remove="S2\S2TL.cs" />
+    <Compile Remove="S3\S3TA.cs" />
+    <Compile Remove="S3\S3TB.cs" />
+    <Compile Remove="S3\S3TC.cs" />
+    <Compile Remove="S3\S3TD.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +75,10 @@
     <None Include="S1\S1TF.cs" />
     <None Include="S2-Final\S2FA.cs" />
     <None Include="S2-Final\S2FB.cs" />
+    <None Include="S3\S3TA.cs" />
+    <None Include="S3\S3TB.cs" />
+    <None Include="S3\S3TC.cs" />
+    <None Include="S3\S3TD.cs" />
     <None Include="Yandex-Practicum-Algo.sln" />
   </ItemGroup>
 

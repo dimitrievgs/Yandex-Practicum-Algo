@@ -14,7 +14,7 @@ public class Node<TValue>
 }
 */
 
-public class Solution
+public class S2TD
 {
     public static int Solve(Node<string> head, string value)
     {

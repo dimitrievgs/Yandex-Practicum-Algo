@@ -5,88 +5,27 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Yandex_Praktikum_Algo</RootNamespace>
     <AssemblyName>Yandex Praktikum</AssemblyName>
+    <StartupObject>General.Solution</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="S1-Final\S1FA.cs" />
-    <Compile Remove="S1-Final\S1FB.cs" />
     <Compile Remove="Ready\A+B.cs" />
     <Compile Remove="Ready\Example1.cs" />
     <Compile Remove="Ready\Example2.cs" />
     <Compile Remove="Ready\Example3.cs" />
     <Compile Remove="Ready\S2TA-transpose.cs" />
-    <Compile Remove="S0\S0TA.cs" />
-    <Compile Remove="S0\S0TB.cs" />
-    <Compile Remove="S0\S0TC.cs" />
-    <Compile Remove="S0\S0TD.cs" />
-    <Compile Remove="S0\S0TE.cs" />
     <Compile Remove="S1\2-SUM Naive %28Dve fishki%29.cs" />
     <Compile Remove="S1\A+B.cs" />
     <Compile Remove="S1\Example1.cs" />
     <Compile Remove="S1\Example2.cs" />
     <Compile Remove="S1\Example3.cs" />
-    <Compile Remove="S1\S1TA.cs" />
-    <Compile Remove="S1\S1TB.cs" />
-    <Compile Remove="S1\S1TC.cs" />
-    <Compile Remove="S1\S1TD.cs" />
-    <Compile Remove="S1\S1TE.cs" />
-    <Compile Remove="S1\S1TF.cs" />
-    <Compile Remove="S1\S1TG.cs" />
-    <Compile Remove="S1\S1TH.cs" />
-    <Compile Remove="S1\S1TI.cs" />
-    <Compile Remove="S1\S1TJ.cs" />
-    <Compile Remove="S1\S1TK.cs" />
-    <Compile Remove="S1\S1TL.cs" />
     <Compile Remove="S1\Skol%27zyashchee srednee.cs" />
     <Compile Remove="Ready\Skol%27zyashchee srednee.cs" />
     <Compile Remove="Ready\Zastyozhka-molniya.cs" />
     <Compile Remove="S1\Zastyozhka-molniya.cs" />
-    <Compile Remove="S2-Final\S2FA.cs" />
-    <Compile Remove="S2-Final\S2FB.cs" />
-    <Compile Remove="S2\S2TA.cs" />
-    <Compile Remove="S2\S2TB.cs" />
-    <Compile Remove="S2\S2TC.cs" />
-    <Compile Remove="S2\S2TD.cs" />
-    <Compile Remove="S2\S2TE.cs" />
-    <Compile Remove="S2\S2TF.cs" />
-    <Compile Remove="S2\S2TG.cs" />
-    <Compile Remove="S2\S2TH.cs" />
-    <Compile Remove="S2\S2TI.cs" />
-    <Compile Remove="S2\S2TJ.cs" />
-    <Compile Remove="S2\S2TK.cs" />
-    <Compile Remove="S2\S2TL.cs" />
-    <Compile Remove="S3\S3TA.cs" />
-    <Compile Remove="S3\S3TB.cs" />
-    <Compile Remove="S3\S3TC.cs" />
-    <Compile Remove="S3\S3TD.cs" />
-    <Compile Remove="S3\S3TE.cs" />
-    <Compile Remove="S3\S3TF.cs" />
-    <Compile Remove="S3\S3TG.cs" />
-    <Compile Remove="S3\S3TH.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="S0\S0TA.cs" />
-    <None Include="S0\S0TB.cs" />
-    <None Include="S0\S0TC.cs" />
-    <None Include="S0\S0TD.cs" />
-    <None Include="S0\S0TE.cs" />
-    <None Include="S1\S1TA.cs" />
-    <None Include="S1\S1TB.cs" />
-    <None Include="S1\S1TC.cs" />
-    <None Include="S1\S1TD.cs" />
-    <None Include="S1\S1TE.cs" />
-    <None Include="S1\S1TF.cs" />
-    <None Include="S2-Final\S2FA.cs" />
-    <None Include="S2-Final\S2FB.cs" />
-    <None Include="S3\S3TA.cs" />
-    <None Include="S3\S3TB.cs" />
-    <None Include="S3\S3TC.cs" />
-    <None Include="S3\S3TD.cs" />
-    <None Include="S3\S3TE.cs" />
-    <None Include="S3\S3TF.cs" />
-    <None Include="S3\S3TG.cs" />
-    <None Include="S3\S3TH.cs" />
     <None Include="Yandex-Practicum-Algo.sln" />
   </ItemGroup>
 
@@ -94,26 +33,6 @@
     <Resource Include="Ready\Example1.cs" />
     <Resource Include="Ready\Example2.cs" />
     <Resource Include="Ready\Example3.cs" />
-    <None Include="S2\S2TJ.cs" />
-    <None Include="S1-Final\S1FA.cs" />
-    <None Include="S1-Final\S1FB.cs" />
-    <None Include="S1\S1TG.cs" />
-    <None Include="S1\S1TH.cs" />
-    <None Include="S1\S1TI.cs" />
-    <None Include="S1\S1TJ.cs" />
-    <None Include="S1\S1TK.cs" />
-    <None Include="S1\S1TL.cs" />
-    <None Include="S2\S2TA.cs" />
-    <None Include="S2\S2TB.cs" />
-    <None Include="S2\S2TC.cs" />
-    <None Include="S2\S2TD.cs" />
-    <None Include="S2\S2TE.cs" />
-    <None Include="S2\S2TG.cs" />
-    <None Include="S2\S2TF.cs" />
-    <None Include="S2\S2TH.cs" />
-    <None Include="S2\S2TI.cs" />
-    <None Include="S2\S2TK.cs" />
-    <None Include="S2\S2TL.cs" />
   </ItemGroup>
 
 </Project>

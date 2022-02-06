@@ -31,7 +31,7 @@ ID 64266916
 using System;
 using System.IO;
 
-public class Solution
+public class S2FA
 {
     private static TextReader reader;
     private static TextWriter writer;

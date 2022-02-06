@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class Solution
+public class S1TL
 {
     private static TextReader reader;
     private static TextWriter writer;

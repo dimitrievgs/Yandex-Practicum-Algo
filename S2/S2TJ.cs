@@ -3,7 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-public class Solution
+public class S2TJ
 {
     private static TextReader reader;
     private static TextWriter writer;

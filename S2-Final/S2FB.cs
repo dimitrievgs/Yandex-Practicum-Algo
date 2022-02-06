@@ -32,129 +32,132 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-public class Solution
+namespace S2FB
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-    private static Stack<int> stack;
-
-    public static void Main(string[] args)
+    public class S2FB
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
+        private static Stack<int> stack;
 
-        string[] input = reader.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        int result = 0;
-        stack = new Stack<int>();
-        try
+        public static void Main(string[] args)
         {
-            foreach (string s in input)
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
+
+            string[] input = reader.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            int result = 0;
+            stack = new Stack<int>();
+            try
             {
-                if (char.IsDigit(s[s.Length - 1])) //операнды
-                    stack.Push(int.Parse(s));
-                else //операторы
+                foreach (string s in input)
                 {
-                    int[] operands = new int[2];
-                    for (int i = 1; i >= 0; i--)
-                        operands[i] = stack.Pop();
-                    int operationResult = 0;
-                    switch (s)
+                    if (char.IsDigit(s[s.Length - 1])) //операнды
+                        stack.Push(int.Parse(s));
+                    else //операторы
                     {
-                        case "+":
-                            operationResult = operands[0] + operands[1];
-                            break;
-                        case "-":
-                            operationResult = operands[0] - operands[1];
-                            break;
-                        case "*":
-                            operationResult = operands[0] * operands[1];
-                            break;
-                        case "/":
-                            operationResult = Divide(operands[0], operands[1]);
-                            break;
+                        int[] operands = new int[2];
+                        for (int i = 1; i >= 0; i--)
+                            operands[i] = stack.Pop();
+                        int operationResult = 0;
+                        switch (s)
+                        {
+                            case "+":
+                                operationResult = operands[0] + operands[1];
+                                break;
+                            case "-":
+                                operationResult = operands[0] - operands[1];
+                                break;
+                            case "*":
+                                operationResult = operands[0] * operands[1];
+                                break;
+                            case "/":
+                                operationResult = Divide(operands[0], operands[1]);
+                                break;
+                        }
+                        stack.Push(operationResult);
                     }
-                    stack.Push(operationResult);
                 }
+                result = stack.Pop();
             }
-            result = stack.Pop();
+            catch (InvalidOperationException) //в задаче предполагаются корректные данные на входе
+            { }
+            writer.WriteLine(result);
+
+            reader.Close();
+            writer.Close();
         }
-        catch (InvalidOperationException) //в задаче предполагаются корректные данные на входе
-        { }
-        writer.WriteLine(result);
 
-        reader.Close();
-        writer.Close();
-    }
-
-    private static int Divide(int dividend, int divider)
-    {
-        if (divider != 0)
-            return (int)Math.Floor(dividend / (double)divider);
-        else
+        private static int Divide(int dividend, int divider)
         {
-            if (dividend == 0)
-                return 0; //т.к. в int нет NaN, здесь любое число
+            if (divider != 0)
+                return (int)Math.Floor(dividend / (double)divider);
             else
-                return int.MaxValue * GetSign(dividend);
+            {
+                if (dividend == 0)
+                    return 0; //т.к. в int нет NaN, здесь любое число
+                else
+                    return int.MaxValue * GetSign(dividend);
+            }
         }
-    }
 
-    private static int GetSign(int value)
-    {
-        return (Math.Sign(value) >= 0) ? +1 : -1;
-    }
-}
-
-public class Stack<TValue>
-{
-    Node<TValue> head;
-    int size;
-
-    private const string errorMessage = "error";
-
-    public Stack()
-    {
-        size = 0;
-    }
-
-    public void Push(TValue value)
-    {
-        Node<TValue> node = new Node<TValue>(value, head);
-        head = node;
-        size += 1;
-    }
-
-    public TValue Pop()
-    {
-        TValue value;
-        if (head != null)
+        private static int GetSign(int value)
         {
-            value = head.Value;
-            head = head.Next;
-            size -= 1;
+            return (Math.Sign(value) >= 0) ? +1 : -1;
         }
-        else
+    }
+
+    public class Stack<TValue>
+    {
+        Node<TValue> head;
+        int size;
+
+        private const string errorMessage = "error";
+
+        public Stack()
         {
-            value = default(TValue);
-            throw new InvalidOperationException(errorMessage);
+            size = 0;
         }
-        return value;
+
+        public void Push(TValue value)
+        {
+            Node<TValue> node = new Node<TValue>(value, head);
+            head = node;
+            size += 1;
+        }
+
+        public TValue Pop()
+        {
+            TValue value;
+            if (head != null)
+            {
+                value = head.Value;
+                head = head.Next;
+                size -= 1;
+            }
+            else
+            {
+                value = default(TValue);
+                throw new InvalidOperationException(errorMessage);
+            }
+            return value;
+        }
+
+        public int Size()
+        {
+            return size;
+        }
     }
 
-    public int Size()
+    public class Node<TValue>
     {
-        return size;
-    }
-}
+        public TValue Value;
+        public Node<TValue> Next;
 
-public class Node<TValue>
-{
-    public TValue Value;
-    public Node<TValue> Next;
-
-    public Node(TValue value, Node<TValue> next = null)
-    {
-        Value = value;
-        Next = next;
+        public Node(TValue value, Node<TValue> next = null)
+        {
+            Value = value;
+            Next = next;
+        }
     }
 }

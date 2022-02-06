@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-public class Solution
+public class S1FA
 {
     private static TextReader reader;
     private static TextWriter writer;

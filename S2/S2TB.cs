@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-public class Solution<TValue>
+public class S2TB<TValue>
 {
     public static void Solve(Node<TValue> head)
     {

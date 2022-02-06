@@ -5,130 +5,133 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class Solution
+namespace S2TH
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class S2TH
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        char[] brackets = reader.ReadLine().ToCharArray();
-        writer.WriteLine(Check(brackets));
-
-        reader.Close();
-        writer.Close();
-    }
-
-    private static bool Check(char[] brackets)
-    {
-        int charsNr = brackets.Length;
-        Stack<Bracket> stack = new Stack<Bracket>();
-        for (int i = 0; i < charsNr; i++)
+        public static void Main(string[] args)
         {
-            Bracket bracket = new Bracket(brackets[i]);
-            Bracket topBracket = stack.peek();
-            if (topBracket == null)
-                stack.push(bracket);
-            else if (bracket.Value == topBracket.Value)
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
+
+            char[] brackets = reader.ReadLine().ToCharArray();
+            writer.WriteLine(Check(brackets));
+
+            reader.Close();
+            writer.Close();
+        }
+
+        private static bool Check(char[] brackets)
+        {
+            int charsNr = brackets.Length;
+            Stack<Bracket> stack = new Stack<Bracket>();
+            for (int i = 0; i < charsNr; i++)
             {
-                if (bracket.Left != topBracket.Left && topBracket.Left == true)
+                Bracket bracket = new Bracket(brackets[i]);
+                Bracket topBracket = stack.peek();
+                if (topBracket == null)
+                    stack.push(bracket);
+                else if (bracket.Value == topBracket.Value)
                 {
-                    stack.pop();
+                    if (bracket.Left != topBracket.Left && topBracket.Left == true)
+                    {
+                        stack.pop();
+                    }
+                    else
+                    {
+                        stack.push(bracket);
+                    }
                 }
                 else
                 {
                     stack.push(bracket);
                 }
             }
-            else
+            return stack.isEmpty();
+        }
+    }
+
+    public class Bracket
+    {
+        public char Value;
+        public bool Left;
+
+        public Bracket(char value, bool left)
+        {
+            Value = value;
+            Left = left;
+        }
+
+        public Bracket(char value)
+        {
+            switch (value)
             {
-                stack.push(bracket);
+                case '{':
+                case '[':
+                case '(':
+                    Value = value;
+                    Left = true;
+                    break;
+                case '}':
+                    Value = '{';
+                    Left = false;
+                    break;
+                case ']':
+                    Value = '[';
+                    Left = false;
+                    break;
+                case ')':
+                    Value = '(';
+                    Left = false;
+                    break;
             }
         }
-        return stack.isEmpty();
-    }
-}
-
-public class Bracket
-{
-    public char Value;
-    public bool Left;
-
-    public Bracket(char value, bool left)
-    {
-        Value = value;
-        Left = left;
     }
 
-    public Bracket(char value)
+    public class Stack<TValue>
     {
-        switch (value)
+        Node<TValue> head;
+
+        public Stack()
         {
-            case '{':
-            case '[':
-            case '(':
-                Value = value;
-                Left = true;
-                break;
-            case '}':
-                Value = '{';
-                Left = false;
-                break;
-            case ']':
-                Value = '[';
-                Left = false;
-                break;
-            case ')':
-                Value = '(';
-                Left = false;
-                break;
+            head = null;
+        }
+
+        public void push(TValue value)
+        {
+            Node<TValue> node = new Node<TValue>(value, head);
+            head = node;
+        }
+
+        public void pop()
+        {
+            if (head != null)
+                head = head.Next;
+        }
+
+        public TValue peek()
+        {
+            return (head != null) ? head.Value : default(TValue);
+        }
+
+        public bool isEmpty()
+        {
+            return head == null;
         }
     }
-}
 
-public class Stack<TValue>
-{
-    Node<TValue> head;
-
-    public Stack()
+    public class Node<TValue>
     {
-        head = null;
-    }
+        public TValue Value;
+        public Node<TValue> Next;
 
-    public void push(TValue value)
-    {
-        Node<TValue> node = new Node<TValue>(value, head);
-        head = node;
-    }
-
-    public void pop()
-    {
-        if (head != null)
-            head = head.Next;
-    }
-
-    public TValue peek()
-    {
-        return (head != null) ? head.Value : default(TValue);
-    }
-
-    public bool isEmpty()
-    {
-        return head == null;
-    }
-}
-
-public class Node<TValue>
-{
-    public TValue Value;
-    public Node<TValue> Next;
-
-    public Node(TValue value, Node<TValue> next)
-    {
-        Value = value;
-        Next = next;
+        public Node(TValue value, Node<TValue> next)
+        {
+            Value = value;
+            Next = next;
+        }
     }
 }

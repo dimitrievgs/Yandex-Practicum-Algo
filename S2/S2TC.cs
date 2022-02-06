@@ -14,7 +14,7 @@ public class Node<TValue>
 }
 */
 
-public class Solution<TValue>
+public class S2TC<TValue>
 {
     public static Node<TValue> Solve(Node<TValue> head, int idx) //Node<TValue>, int
     {

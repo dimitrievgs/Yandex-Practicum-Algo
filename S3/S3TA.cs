@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 
-class Solution
+class S3TA
 {
     public static TextReader textReader;
     public static TextWriter textWriter;

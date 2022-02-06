@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-public class Solution
+public class S2TG
 {
     private static TextReader reader;
     private static TextWriter writer;

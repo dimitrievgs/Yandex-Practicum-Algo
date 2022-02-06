@@ -3,7 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-public class Solution
+public class S3TH
 {
     private static TextReader reader;
     private static TextWriter writer;
@@ -32,7 +32,6 @@ public class Solution
             return yPx.CompareTo(xPy); //descending
         }
     }
-
 
     private static int ReadInt()
     {

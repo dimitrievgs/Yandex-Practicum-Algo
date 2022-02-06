@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class Solution
+public class S0TA
 {
     private static TextReader reader;
     private static TextWriter writer;

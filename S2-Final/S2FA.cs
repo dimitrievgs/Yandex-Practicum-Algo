@@ -31,160 +31,162 @@ ID 64266916
 using System;
 using System.IO;
 
-public class S2FA
+namespace S2FA
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-    private static Deque<int> deque;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
+        private static Deque<int> deque;
 
-        int n = ReadInt();
-        int m = ReadInt();
-        deque = new Deque<int>(m);
-        for (int i = 0; i < n; i++)
+        public static void Main(string[] args)
         {
-            string commandLine = reader.ReadLine();
-            ParseCommand(deque, commandLine);
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
+
+            int n = ReadInt();
+            int m = ReadInt();
+            deque = new Deque<int>(m);
+            for (int i = 0; i < n; i++)
+            {
+                string commandLine = reader.ReadLine();
+                ParseCommand(deque, commandLine);
+            }
+
+            reader.Close();
+            writer.Close();
         }
 
-        reader.Close();
-        writer.Close();
-    }
-
-    private static int ReadInt()
-    {
-        return int.Parse(reader.ReadLine());
-    }
-
-    private static void ParseCommand(Deque<int> deque, string commandLine)
-    {
-        string[] commandParts = commandLine
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        string command = commandParts[0];
-        int parameter = (commandParts.Length > 1) ? int.Parse(commandParts[1]) : 0;
-        int value;
-        try
+        private static int ReadInt()
         {
-            switch (command)
+            return int.Parse(reader.ReadLine());
+        }
+
+        private static void ParseCommand(Deque<int> deque, string commandLine)
+        {
+            string[] commandParts = commandLine
+                .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string command = commandParts[0];
+            int parameter = (commandParts.Length > 1) ? int.Parse(commandParts[1]) : 0;
+            int value;
+            try
             {
-                case "push_front":
-                    deque.PushFront(parameter);
-                    break;
-                case "push_back":
-                    deque.PushBack(parameter);
-                    break;
-                case "pop_front":
-                    value = deque.PopFront();
-                    writer.WriteLine(value);
-                    break;
-                case "pop_back":
-                    value = deque.PopBack();
-                    writer.WriteLine(value);
-                    break;
+                switch (command)
+                {
+                    case "push_front":
+                        deque.PushFront(parameter);
+                        break;
+                    case "push_back":
+                        deque.PushBack(parameter);
+                        break;
+                    case "pop_front":
+                        value = deque.PopFront();
+                        writer.WriteLine(value);
+                        break;
+                    case "pop_back":
+                        value = deque.PopBack();
+                        writer.WriteLine(value);
+                        break;
+                }
+            }
+            catch (InvalidOperationException e)
+            {
+                writer.WriteLine(e.Message);
             }
         }
-        catch (InvalidOperationException e)
+    }
+
+    public class Deque<TValue>
+    {
+        private TValue[] array;
+        private int nMax;
+        private int head; //для удобства head указывает на первую заполненную ячейку
+        private int tail; //а tail на последнюю заполненную, как предлагается на stepik
+        private int filledCells;
+
+        private const string errorMessage = "error";
+
+        public Deque(int n)
         {
-            writer.WriteLine(e.Message);
+            array = new TValue[n];
+            nMax = n;
+            head = 0;
+            tail = 0;
+            filledCells = 0;
+        }
+
+        public void PushFront(TValue value)
+        {
+            if (IsFull())
+                throw new InvalidOperationException(errorMessage);
+            else
+            {
+                if (!IsEmpty())
+                    head = (head - 1 + nMax) % nMax;
+                array[head] = value;
+                filledCells += 1;
+            }
+        }
+
+        public void PushBack(TValue value)
+        {
+            if (IsFull())
+                throw new InvalidOperationException(errorMessage);
+            else
+            {
+                if (!IsEmpty())
+                    tail = (tail + 1) % nMax;
+                array[tail] = value;
+                filledCells += 1;
+            }
+        }
+
+        public TValue PopFront()
+        {
+            TValue value;
+            if (IsEmpty())
+            {
+                value = default(TValue);
+                throw new InvalidOperationException(errorMessage);
+            }
+            else
+            {
+                value = array[head];
+                array[head] = default(TValue);
+                if (filledCells > 1)
+                    head = (head + 1) % nMax;
+                filledCells -= 1;
+            }
+            return value;
+        }
+
+        public TValue PopBack()
+        {
+            TValue value;
+            if (IsEmpty())
+            {
+                value = default(TValue);
+                throw new InvalidOperationException(errorMessage);
+            }
+            else
+            {
+                value = array[tail];
+                array[tail] = default(TValue);
+                if (filledCells > 1)
+                    tail = (tail - 1 + nMax) % nMax;
+                filledCells -= 1;
+            }
+            return value;
+        }
+
+        private bool IsFull()
+        {
+            return filledCells == nMax;
+        }
+
+        private bool IsEmpty()
+        {
+            return filledCells == 0;
         }
     }
 }
-
-public class Deque<TValue>
-{
-    private TValue[] array;
-    private int nMax;
-    private int head; //для удобства head указывает на первую заполненную ячейку
-    private int tail; //а tail на последнюю заполненную, как предлагается на stepik
-    private int filledCells;
-
-    private const string errorMessage = "error";
-
-    public Deque(int n)
-    {
-        array = new TValue[n];
-        nMax = n;
-        head = 0;
-        tail = 0;
-        filledCells = 0;
-    }
-
-    public void PushFront(TValue value)
-    {
-        if (IsFull())
-            throw new InvalidOperationException(errorMessage);
-        else
-        {
-            if (!IsEmpty())
-                head = (head - 1 + nMax) % nMax;
-            array[head] = value;
-            filledCells += 1;
-        }
-    }
-
-    public void PushBack(TValue value)
-    {
-        if (IsFull())
-            throw new InvalidOperationException(errorMessage);
-        else
-        {
-            if (!IsEmpty())
-                tail = (tail + 1) % nMax;
-            array[tail] = value;
-            filledCells += 1;
-        }
-    }
-
-    public TValue PopFront()
-    {
-        TValue value;
-        if (IsEmpty())
-        {
-            value = default(TValue);
-            throw new InvalidOperationException(errorMessage);
-        }
-        else
-        {
-            value = array[head];
-            array[head] = default(TValue);
-            if (filledCells > 1)
-                head = (head + 1) % nMax;
-            filledCells -= 1;
-        }
-        return value;
-    }
-
-    public TValue PopBack()
-    {
-        TValue value;
-        if (IsEmpty())
-        {
-            value = default(TValue);
-            throw new InvalidOperationException(errorMessage);
-        }
-        else
-        {
-            value = array[tail];
-            array[tail] = default(TValue);
-            if (filledCells > 1)
-                tail = (tail - 1 + nMax) % nMax;
-            filledCells -= 1;
-        }
-        return value;
-    }
-
-    private bool IsFull()
-    {
-        return filledCells == nMax;
-    }
-
-    private bool IsEmpty()
-    {
-        return filledCells == 0;
-    }
-}
-

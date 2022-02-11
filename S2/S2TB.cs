@@ -3,16 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-public class S2TB<TValue>
+namespace S2TB
 {
-    public static void Solve(Node<TValue> head)
+    public class Solution<TValue>
     {
-        var node = head;
-        do
+        public static void Solve(Node<TValue> head)
         {
-            Console.WriteLine(node.Value);
-            node = node.Next;
+            var node = head;
+            do
+            {
+                Console.WriteLine(node.Value);
+                node = node.Next;
+            }
+            while (node != null);
         }
-        while (node != null);
+    }
+
+    // закомментируйте перед отправкой
+    public class Node<TValue>
+    {
+        public TValue Value { get; private set; }
+        public Node<TValue> Next { get; set; }
+
+        public Node(TValue value, Node<TValue> next)
+        {
+            Value = value;
+            Next = next;
+        }
     }
 }

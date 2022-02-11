@@ -28,8 +28,7 @@ namespace S2TE
         }
     }
 
-
-    public class S2TE
+    public class Solution
     {
         private static TextReader reader;
         private static TextWriter writer;

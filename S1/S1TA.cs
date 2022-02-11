@@ -5,36 +5,39 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class S1TA
+namespace S1TA
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        var nlist = ReadList();
-        //a, x, b, c
-        var a = nlist[0];
-        var x = nlist[1];
-        var b = nlist[2];
-        var c = nlist[3];
+        public static void Main(string[] args)
+        {
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
 
-        var y = a * Math.Pow(x, 2) + b * x + c;
-        writer.WriteLine(y);
+            var nlist = ReadList();
+            //a, x, b, c
+            var a = nlist[0];
+            var x = nlist[1];
+            var b = nlist[2];
+            var c = nlist[3];
+
+            var y = a * Math.Pow(x, 2) + b * x + c;
+            writer.WriteLine(y);
 
 
-        reader.Close();
-        writer.Close();
-    }
+            reader.Close();
+            writer.Close();
+        }
 
-    private static List<int> ReadList()
-    {
-        return reader.ReadLine()
-        .Split(new[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
-        .Select(int.Parse)
-        .ToList();
+        private static List<int> ReadList()
+        {
+            return reader.ReadLine()
+            .Split(new[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToList();
+        }
     }
 }

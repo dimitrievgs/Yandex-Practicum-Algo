@@ -3,45 +3,48 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-public class S3TH
+namespace S3TH
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        int n = ReadInt();
-        string[] strNumbers = ReadStrNumbers();
-        Array.Sort(strNumbers, new ItemComparer());
-        foreach (string s in strNumbers)
-            writer.Write(s);
-
-        reader.Close();
-        writer.Close();
-    }
-
-    private class ItemComparer : IComparer<string>
-    {
-        public int Compare(string strX, string strY)
+        public static void Main(string[] args)
         {
-            int xPy = int.Parse(strX + strY);
-            int yPx = int.Parse(strY + strX);
-            return yPx.CompareTo(xPy); //descending
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
+
+            int n = ReadInt();
+            string[] strNumbers = ReadStrNumbers();
+            Array.Sort(strNumbers, new ItemComparer());
+            foreach (string s in strNumbers)
+                writer.Write(s);
+
+            reader.Close();
+            writer.Close();
         }
-    }
 
-    private static int ReadInt()
-    {
-        return int.Parse(reader.ReadLine());
-    }
+        private class ItemComparer : IComparer<string>
+        {
+            public int Compare(string strX, string strY)
+            {
+                int xPy = int.Parse(strX + strY);
+                int yPx = int.Parse(strY + strX);
+                return yPx.CompareTo(xPy); //descending
+            }
+        }
 
-    private static string[] ReadStrNumbers()
-    {
-        return reader.ReadLine()
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-            .ToArray();
+        private static int ReadInt()
+        {
+            return int.Parse(reader.ReadLine());
+        }
+
+        private static string[] ReadStrNumbers()
+        {
+            return reader.ReadLine()
+                .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .ToArray();
+        }
     }
 }

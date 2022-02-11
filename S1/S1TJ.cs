@@ -5,40 +5,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class S1TJ
+namespace S1TJ
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        int n = ReadInt();
-        writer.WriteLine(string.Join(" ", Factorization(n)));
+        public static void Main(string[] args)
+        {
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
 
-        reader.Close();
-        writer.Close();
-    }
+            int n = ReadInt();
+            writer.WriteLine(string.Join(" ", Factorization(n)));
 
-    private static int ReadInt()
-    {
-        return int.Parse(reader.ReadLine());
-    }
+            reader.Close();
+            writer.Close();
+        }
 
-    private static List<int> Factorization(int n)
-    {
-        List<int> numbers = new List<int>();
-        int pool = n;
-        for (int i = 2; i * i < n; i++)
-            while (pool % i == 0)
-            {
-                numbers.Add(i);
-                pool = pool / i;
-            }
-        if (pool > 1)
-            numbers.Add(pool);
-        return numbers;
+        private static int ReadInt()
+        {
+            return int.Parse(reader.ReadLine());
+        }
+
+        private static List<int> Factorization(int n)
+        {
+            List<int> numbers = new List<int>();
+            int pool = n;
+            for (int i = 2; i * i < n; i++)
+                while (pool % i == 0)
+                {
+                    numbers.Add(i);
+                    pool = pool / i;
+                }
+            if (pool > 1)
+                numbers.Add(pool);
+            return numbers;
+        }
     }
 }

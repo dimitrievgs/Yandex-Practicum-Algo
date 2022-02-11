@@ -6,7 +6,7 @@ using System.Text;
 
 namespace S2TF
 {
-    public class S2TF
+    public class Solution
     {
         private static TextReader reader;
         private static TextWriter writer;

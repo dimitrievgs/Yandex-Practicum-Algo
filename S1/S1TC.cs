@@ -3,94 +3,97 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class S1TC
+namespace S1TC
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        var n = ReadInt(); //строки
-        var m = ReadInt(); //столбцы
-        var matrix = ReadMatrix(n, m);
-        var elY = ReadInt();
-        var elX = ReadInt();
-
-        int nNumber = 0;
-        var neighbours = GetNeighbours(n, m, matrix, elY, elX, out nNumber);
-        Array.Sort(neighbours);
-        string sOutput = "";
-        for (int ni = 0; ni < nNumber; ni++)
+        public static void Main(string[] args)
         {
-            if (ni > 0)
-                sOutput += " ";
-            sOutput += neighbours[ni];
-        }
-        writer.Write(sOutput);
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
 
-        reader.Close();
-        writer.Close();
-    }
+            var n = ReadInt(); //строки
+            var m = ReadInt(); //столбцы
+            var matrix = ReadMatrix(n, m);
+            var elY = ReadInt();
+            var elX = ReadInt();
 
-    private static int ReadInt()
-    {
-        return int.Parse(reader.ReadLine());
-    }
-
-    private static List<int> ReadList()
-    {
-        return reader.ReadLine()
-        .Split(new char[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
-        .Select(int.Parse)
-        .ToList();
-    }
-
-    private static int[,] ReadMatrix(int n, int m)
-    {
-        int[,] matrix = new int[n, m];
-        for (int j = 0; j < n; j++)
-        {
-            List<int> numbers = ReadList();
-            for (int i = 0; i < m; i++)
+            int nNumber = 0;
+            var neighbours = GetNeighbours(n, m, matrix, elY, elX, out nNumber);
+            Array.Sort(neighbours);
+            string sOutput = "";
+            for (int ni = 0; ni < nNumber; ni++)
             {
-                matrix[j, i] = numbers[i];
+                if (ni > 0)
+                    sOutput += " ";
+                sOutput += neighbours[ni];
             }
-        }
-        return matrix;
-    }
+            writer.Write(sOutput);
 
-    private static int[] GetNeighbours(int n, int m, int[,] matrix, int elY, int elX, out int nNumber)
-    {
-        int[] neighbours = new int[4];
-        nNumber = 0;
-        int leftX = elX - 1;
-        int rightX = elX + 1;
-        int topY = elY - 1;
-        int bottomY = elY + 1;
-        if (leftX >= 0)
-        {
-            neighbours[nNumber] = matrix[elY, leftX];
-            nNumber++;
+            reader.Close();
+            writer.Close();
         }
-        if (rightX <= m - 1)
+
+        private static int ReadInt()
         {
-            neighbours[nNumber] = matrix[elY, rightX];
-            nNumber++;
+            return int.Parse(reader.ReadLine());
         }
-        if (topY >= 0)
+
+        private static List<int> ReadList()
         {
-            neighbours[nNumber] = matrix[topY, elX];
-            nNumber++;
+            return reader.ReadLine()
+            .Split(new char[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToList();
         }
-        if (bottomY <= n - 1)
+
+        private static int[,] ReadMatrix(int n, int m)
         {
-            neighbours[nNumber] = matrix[bottomY, elX];
-            nNumber++;
+            int[,] matrix = new int[n, m];
+            for (int j = 0; j < n; j++)
+            {
+                List<int> numbers = ReadList();
+                for (int i = 0; i < m; i++)
+                {
+                    matrix[j, i] = numbers[i];
+                }
+            }
+            return matrix;
         }
-        neighbours = neighbours.Take(nNumber).ToArray();
-        return neighbours;
+
+        private static int[] GetNeighbours(int n, int m, int[,] matrix, int elY, int elX, out int nNumber)
+        {
+            int[] neighbours = new int[4];
+            nNumber = 0;
+            int leftX = elX - 1;
+            int rightX = elX + 1;
+            int topY = elY - 1;
+            int bottomY = elY + 1;
+            if (leftX >= 0)
+            {
+                neighbours[nNumber] = matrix[elY, leftX];
+                nNumber++;
+            }
+            if (rightX <= m - 1)
+            {
+                neighbours[nNumber] = matrix[elY, rightX];
+                nNumber++;
+            }
+            if (topY >= 0)
+            {
+                neighbours[nNumber] = matrix[topY, elX];
+                nNumber++;
+            }
+            if (bottomY <= n - 1)
+            {
+                neighbours[nNumber] = matrix[bottomY, elX];
+                nNumber++;
+            }
+            neighbours = neighbours.Take(nNumber).ToArray();
+            return neighbours;
+        }
     }
 }

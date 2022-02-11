@@ -1,75 +1,108 @@
-﻿using System;
+﻿// It should be sent as the Solution.cs file to be compiled by the Make compiler, without namespace.
+// Signatures of MergeSort(List<int> listArray, int left, int right) and Merge(List<int> listArray, int left, int mid, int right) are fixed by the task.
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-class S3TK
+namespace S3TK
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        /*private static TextReader reader;
+        private static TextWriter writer;
+        private static Random random = new Random();
 
-        int n = ReadInt();
-        int[] array = ReadInts();
-        array = BubbleSort<int>.Sort(array, writer);
-
-        SugarProperty = 7;
-        int testSugar = SugarProperty;
-
-        reader.Close();
-        writer.Close();
-    }
-
-    public static int ReadInt()
-    {
-        return int.Parse(reader.ReadLine());
-    }
-
-    public static int[] ReadInts()
-    {
-        return reader.ReadLine()
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(int.Parse)
-            .ToArray();
-    }
-
-    private static int sugarProp;
-
-    public static int SugarProperty
-    {
-        get => sugarProp;
-        set => sugarProp = value;
-    }
-
-}
-
-public class BubbleSort<T> where T : IComparable
-{
-    public static T[] Sort(T[] array, TextWriter writer)
-    {
-        int arrayLength = array.Length;
-        for (int i = 0; i < arrayLength - 1; i++)
+        public static void Main(string[] args)
         {
-            int swapsNr = 0;
-            for (int j = 0; j < arrayLength - 1 - i; j++)
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
+
+            int n = int.Parse(reader.ReadLine());
+            List<int> array = RandomArray(n);
+            writer.WriteLine(string.Join(" ", array));
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            MergeSort(array, 0, n);
+            stopwatch.Stop();
+            writer.WriteLine(string.Join(" ", array));
+            writer.WriteLine("-----------------------------");
+            writer.WriteLine(stopwatch.Elapsed.TotalSeconds);
+
+            reader.Close();
+            writer.Close();
+        }
+
+        private static List<int> RandomArray(int n)
+        {
+            List<int> array = new List<int>();
+            for (int i = 0; i < n; i++)
+                array.Add(random.Next(0, 890000));
+            return array;
+        }*/
+        
+        public static void MergeSort(List<int> listArray, int left, int right)
+        {
+            if (right - left <= 1)
+                return;
+            int mid = (left + right) / 2;
+            MergeSort(listArray, left, mid);
+            MergeSort(listArray, mid, right);
+            listArray = Merge(listArray, left, mid, right);
+        }
+
+        public static List<int> Merge(List<int> listArray, int left, int mid, int right)
+        {
+            //Copying part of list in the array to get O(1) for getting elements //otherwise I get "TL": for list with 53548 it's more than 2 sec on Yandex Contest. This algo takes 32 ms at my local pc.
+            int[] array = listArray.GetRange(left, right - left).ToArray();
+            int[] result = (int[])array.Clone();
+            int resLeft = 0;
+            int resMid = mid - left;
+            int resRight = right - left;
+            int leftArPointer = resLeft;
+            int rightArPointer = resMid;
+            int resultPointer = resLeft;
+
+            while (leftArPointer < resMid && rightArPointer < resRight)
             {
-                if (array[j].CompareTo(array[j + 1]) > 0)
+                int leftEl = array[leftArPointer];
+                int rightEl = array[rightArPointer];
+                if (leftEl < rightEl)
                 {
-                    var temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
-                    swapsNr++;
+                    result[resultPointer] = leftEl;
+                    resultPointer++;
+                    leftArPointer++;
+                }
+                else
+                {
+                    result[resultPointer] = rightEl;
+                    resultPointer++;
+                    rightArPointer++;
                 }
             }
-            if (i == 0 || swapsNr > 0)
-                writer.WriteLine(string.Join(" ", array));
+
+            while (leftArPointer < resMid)
+            {
+                result[resultPointer] = array[leftArPointer];
+                resultPointer++;
+                leftArPointer++;
+            }
+
+            while (rightArPointer < resRight)
+            {
+                result[resultPointer] = array[rightArPointer];
+                resultPointer++;
+                rightArPointer++;
+            }
+
+            //looks like here access to listArray is not O(1), should be done in better way
+            for (int i = resLeft; i < resRight; i++)
+                listArray[i + left] = result[i];
+
+            return listArray;
         }
-        return array;
     }
 }

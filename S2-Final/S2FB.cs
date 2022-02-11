@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace S2FB
 {
-    public class S2FB
+    public class Solution
     {
         private static TextReader reader;
         private static TextWriter writer;

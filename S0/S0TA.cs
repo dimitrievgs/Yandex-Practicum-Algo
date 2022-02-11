@@ -5,37 +5,40 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class S0TA
+namespace S0TA
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        var n1 = ReadInt();
-        var n2 = ReadInt();
+        public static void Main(string[] args)
+        {
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
 
-        int n3 = n1 + n2;
+            var n1 = ReadInt();
+            var n2 = ReadInt();
 
-        writer.Write(n3);
+            int n3 = n1 + n2;
 
-        reader.Close();
-        writer.Close();
-    }
+            writer.Write(n3);
 
-    private static int ReadInt()
-    {
-        return int.Parse(reader.ReadLine());
-    }
+            reader.Close();
+            writer.Close();
+        }
 
-    private static List<int> ReadList()
-    {
-        return reader.ReadLine()
-            .Split(new[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(int.Parse)
-            .ToList();
+        private static int ReadInt()
+        {
+            return int.Parse(reader.ReadLine());
+        }
+
+        private static List<int> ReadList()
+        {
+            return reader.ReadLine()
+                .Split(new[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToList();
+        }
     }
 }

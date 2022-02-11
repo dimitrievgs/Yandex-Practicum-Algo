@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace S2TH
 {
-    public class S2TH
+    public class Solution
     {
         private static TextReader reader;
         private static TextWriter writer;

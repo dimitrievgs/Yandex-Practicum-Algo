@@ -3,33 +3,36 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-public class S2TK
+namespace S2TK
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        var n = ReadInt();
-        writer.WriteLine(RecursiveFibonacci(n));
+        public static void Main(string[] args)
+        {
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
 
-        reader.Close();
-        writer.Close();
-    }
+            var n = ReadInt();
+            writer.WriteLine(RecursiveFibonacci(n));
 
-    private static int ReadInt()
-    {
-        return int.Parse(reader.ReadLine());
-    }
+            reader.Close();
+            writer.Close();
+        }
 
-    private static int RecursiveFibonacci(int n)
-    {
-        if (n == 0 || n == 1)
-            return 1;
-        else
-            return RecursiveFibonacci(n - 1) + RecursiveFibonacci(n - 2);
+        private static int ReadInt()
+        {
+            return int.Parse(reader.ReadLine());
+        }
+
+        private static int RecursiveFibonacci(int n)
+        {
+            if (n == 0 || n == 1)
+                return 1;
+            else
+                return RecursiveFibonacci(n - 1) + RecursiveFibonacci(n - 2);
+        }
     }
 }

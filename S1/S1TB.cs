@@ -3,33 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-public class S1TB
+namespace S1TB
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
-        List<int> numbers = ReadList();
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        int rem1 = Math.Abs(numbers[0] % 2);
-        int rem2 = Math.Abs(numbers[1] % 2);
-        int rem3 = Math.Abs(numbers[2] % 2);
-        bool success = rem1 == rem2 && rem2 == rem3;
-        string result = success ? "WIN" : "FAIL";
-        writer.WriteLine(result);
+        public static void Main(string[] args)
+        {
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
+            List<int> numbers = ReadList();
 
-        reader.Close();
-        writer.Close();
-    }
+            int rem1 = Math.Abs(numbers[0] % 2);
+            int rem2 = Math.Abs(numbers[1] % 2);
+            int rem3 = Math.Abs(numbers[2] % 2);
+            bool success = rem1 == rem2 && rem2 == rem3;
+            string result = success ? "WIN" : "FAIL";
+            writer.WriteLine(result);
 
-    private static List<int> ReadList()
-    {
-        return reader.ReadLine()
-        .Split(new[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
-        .Select(int.Parse)
-        .ToList();
+            reader.Close();
+            writer.Close();
+        }
+
+        private static List<int> ReadList()
+        {
+            return reader.ReadLine()
+            .Split(new[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToList();
+        }
     }
 }

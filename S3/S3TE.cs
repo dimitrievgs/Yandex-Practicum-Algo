@@ -3,46 +3,49 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-public class S3TE
+namespace S3TE
 {
-    private static TextReader reader;
-    private static TextWriter writer;
-
-    public static void Main(string[] args)
+    public class Solution
     {
-        reader = new StreamReader(Console.OpenStandardInput());
-        writer = new StreamWriter(Console.OpenStandardOutput());
+        private static TextReader reader;
+        private static TextWriter writer;
 
-        int[] nK = ReadInts();
-        int n = nK[0]; //number of houses
-        int k = nK[1]; //total budget
-        int[] housesCosts = ReadInts(); //costs of houses
-
-        Array.Sort(housesCosts);
-        int houseIndex = 0;
-        int remainedBudget = k;
-        while (houseIndex < n)
+        public static void Main(string[] args)
         {
-            int houseCost = housesCosts[houseIndex];
-            if (houseCost <= remainedBudget)
+            reader = new StreamReader(Console.OpenStandardInput());
+            writer = new StreamWriter(Console.OpenStandardOutput());
+
+            int[] nK = ReadInts();
+            int n = nK[0]; //number of houses
+            int k = nK[1]; //total budget
+            int[] housesCosts = ReadInts(); //costs of houses
+
+            Array.Sort(housesCosts);
+            int houseIndex = 0;
+            int remainedBudget = k;
+            while (houseIndex < n)
             {
-                remainedBudget -= houseCost;
-                houseIndex++;
+                int houseCost = housesCosts[houseIndex];
+                if (houseCost <= remainedBudget)
+                {
+                    remainedBudget -= houseCost;
+                    houseIndex++;
+                }
+                else
+                    break;
             }
-            else
-                break;
+            writer.WriteLine(houseIndex);
+
+            reader.Close();
+            writer.Close();
         }
-        writer.WriteLine(houseIndex);
 
-        reader.Close();
-        writer.Close();
-    }
-
-    private static int[] ReadInts()
-    {
-        return reader.ReadLine()
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(int.Parse)
-            .ToArray();
+        private static int[] ReadInts()
+        {
+            return reader.ReadLine()
+                .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToArray();
+        }
     }
 }

@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>Yandex_Praktikum_Algo</RootNamespace>
-    <AssemblyName>Yandex Praktikum</AssemblyName>
+    <RootNamespace>Yandex_Practicum_Algo</RootNamespace>
+    <AssemblyName>Yandex Practicum</AssemblyName>
     <StartupObject>General.Solution</StartupObject>
   </PropertyGroup>
 

@@ -15,8 +15,8 @@ class Solution
 
     /*public static void Main(string[] args)
     {
-        ProcessConsoleData();
-        //Test.Do(BrokenSearch);
+        //ProcessConsoleData();
+        Test.Do(BrokenSearch);
     }
 
     private static void ProcessConsoleData()
@@ -47,9 +47,9 @@ class Solution
 
 class CircularSortedArray
 {
-    private int[] array;
+    private List<int> array;
 
-    public int[] Array
+    public List<int> Array
     {
         get { return array; }
     }
@@ -64,32 +64,58 @@ class CircularSortedArray
     private int head;
     private int tail;
 
-    public CircularSortedArray(List<int> list)
+    public CircularSortedArray(List<int> arrayIn)
     {
-        this.size = list.Count;
-        array = new int[size];
-        int i = 0;
-        array[size - 1] = list.Last();
-        bool headTailFound = false;
-        foreach (var element in list)
-        {
-            array[i] = element;
-            if (!headTailFound)
-                headTailFound = GetHeadAndTail(i);
-            i++;
-        }
+        this.size = arrayIn.Count;
+        array = arrayIn; //just take it to avoid O(N) copying
+                         //var headTail0 = GetHeadAndTailLinearly();
+        int[] headTail = GetHeadAndTailByBinarySearch();
+        head = headTail[0];
+        tail = headTail[1];
     }
 
-    private bool GetHeadAndTail(int i)
+    /// <summary>
+    /// Get Head and Tail with O(N)
+    /// </summary>
+    /// <returns></returns>
+    private int[] GetHeadAndTailLinearly()
     {
-        bool success = false;
-        if (array[i] < array[(i - 1 + size) % size])
+        int head = 0, tail = 0;
+        for (int i = 0; i < size; i++)
         {
-            head = i;
-            tail = (i - 1 + size) % size;
-            success = true;
+            if (array[i] < array[(i - 1 + size) % size])
+            {
+                head = i;
+                tail = (i - 1 + size) % size;
+                break;
+            }
         }
-        return success;
+        return new int[] { head, tail };
+    }
+
+    public int[] GetHeadAndTailByBinarySearch()
+    {
+        int tail = GetTailByBinarySearch(0, size - 1);
+        int head = (tail + 1) % size;
+        return new int[] { head, tail };
+    }
+
+    public int GetTailByBinarySearch(int left, int right)
+    {
+        if (left >= right - 1)
+        {
+            if (array[left] > array[right])
+                return left;
+            else
+                return right;
+        }
+        int mid = (left + right) / 2;
+        //check where the violation of non-decreasing is
+        if (array[mid] < array[left])
+            return GetTailByBinarySearch(left, mid);
+        else if (array[right] < array[mid])
+            return GetTailByBinarySearch(mid, right);
+        else return left;
     }
 
     public int FindIndex(int element)

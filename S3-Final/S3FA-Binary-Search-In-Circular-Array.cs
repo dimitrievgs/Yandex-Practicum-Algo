@@ -1,10 +1,41 @@
-﻿using System;
+﻿/*
+ID 64266916
+отчёт 
+задача https://contest.yandex.ru/contest/23815/problems/A/
+
+-- ПРИНЦИП РАБОТЫ --
+На вход подаётся "сломанный" круговой массив.
+
+Поскольку нужно, чтобы операциb выполнялись за O(1), для реализации дека
+использую закольцованный массив. При реализации закольцованного массива 
+для единообразия PushFront/PushBack и PopFront/PopBack у меня head указывает 
+на первый левый заполненный элемент, а tail на последний правый заполненный 
+элемент.
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Поскольку это реализация Дека, то мы 1 к 1 переводим команды со входа в операции
+на Деке. В основе абстрактного типа данных Дек использован закольцованный массив.
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Использование массива позволяет обращаться к любому элементу, если известно 
+его положение, за O(1). А закольцованность позволит избежать проблем при 
+вставке элементов в начало или середину массива (не понадобится сдвигать 
+все, что справа). Дополнительно O(1) гарантируется условиями задачи: 
+согласно им, не нужно кратно увеличивать размер массива при его заполнении, 
+достаточно выводить error.
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+Пространственная сложность линейная O(N), поскольку обрабатывая команды, мы 
+поочередно помещаем и извлекаем элементы из массива. В пределе это просто N
+если на вход подаётся только push(x). Остальные переменные занимают константный
+объём памяти.
+-- ПРАВКИ --
+Выправил сигнатуры pop<...>() и push<...>(x)
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
-namespace S3FA
+namespace S3FA_2
 {
     class Solution
     {
@@ -15,7 +46,7 @@ namespace S3FA
             return kIndex;
         }
 
-        public static void Main(string[] args)
+        /*public static void Main(string[] args)
         {
             //ProcessConsoleData();
             Test.Do(BrokenSearch);
@@ -44,7 +75,7 @@ namespace S3FA
                 .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(int.Parse)
                 .ToList();
-        }
+        }*/
     }
 
     class CircularSortedArray
@@ -69,30 +100,10 @@ namespace S3FA
         public CircularSortedArray(List<int> arrayIn)
         {
             this.size = arrayIn.Count;
-            array = arrayIn; //just take it to avoid O(N) copying
-            //var headTail0 = GetHeadAndTailLinearly();
+            array = arrayIn; //берём как есть, чтобы избежать O(N) копирования
             int[] headTail = GetHeadAndTailByBinarySearch();
             head = headTail[0];
             tail = headTail[1];
-        }
-
-        /// <summary>
-        /// Get Head and Tail with O(N)
-        /// </summary>
-        /// <returns></returns>
-        private int[] GetHeadAndTailLinearly()
-        {
-            int head = 0, tail = 0;
-            for (int i = 0; i < size; i++)
-            {
-                if (array[i] < array[(i - 1 + size) % size])
-                {
-                    head = i;
-                    tail = (i - 1 + size) % size;
-                    break;
-                }
-            }
-            return new int[] { head, tail };
         }
 
         public int[] GetHeadAndTailByBinarySearch()
@@ -104,15 +115,15 @@ namespace S3FA
 
         public int GetTailByBinarySearch(int left, int right)
         {
-            if (left >= right - 1) 
+            if (left >= right - 1)
             {
                 if (array[left] > array[right])
                     return left;
-                else 
+                else
                     return right;
             }
             int mid = (left + right) / 2;
-            //check where the violation of non-decreasing is
+            //проверим, где происходит нарушение неубывания
             if (array[mid] < array[left])
                 return GetTailByBinarySearch(left, mid);
             else if (array[right] < array[mid])

@@ -3,7 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-namespace S3TE
+namespace S3TD
 {
     public class Solution
     {
@@ -15,29 +15,32 @@ namespace S3TE
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            List<int> nK = ReadInts();
-            int n = nK[0]; //number of houses
-            int k = nK[1]; //total budget
-            List<int> housesCosts = ReadInts(); //costs of houses
-            //List<int> housesCosts = TestHousesCost(n, k);
-            housesCosts = QuickSort(housesCosts);
-            int houseIndex = 0;
-            int remainedBudget = k;
-            while (houseIndex < n)
+            int n = ReadInt();
+            List<int> greedFactors = ReadInts();
+            int m = ReadInt();
+            List<int> cookieSizes = ReadInts();
+
+            greedFactors = QuickSort(greedFactors);
+            cookieSizes = QuickSort(cookieSizes);
+            int nCursor = 0;
+            int mCursor = 0;
+            while (nCursor < n && mCursor < m)
             {
-                int houseCost = housesCosts[houseIndex];
-                if (houseCost <= remainedBudget)
+                if (cookieSizes[mCursor] >= greedFactors[nCursor])
                 {
-                    remainedBudget -= houseCost;
-                    houseIndex++;
+                    nCursor++;
                 }
-                else
-                    break;
+                mCursor++;
             }
-            writer.WriteLine(houseIndex);
+            writer.WriteLine(nCursor);
 
             reader.Close();
             writer.Close();
+        }
+
+        private static int ReadInt()
+        {
+            return int.Parse(reader.ReadLine());
         }
 
         private static List<int> ReadInts()
@@ -48,15 +51,6 @@ namespace S3TE
                 .ToList();
         }
 
-        private static List<int> TestHousesCost(int n, int houseCost)
-        {
-            List<int> list = new List<int>();
-            Random rand = new Random();
-            for (int i = 0; i < n; i++)
-                list.Add(rand.Next(1, houseCost * 3));
-            return list;
-        }
-                
         private static Random rand = new Random();
 
         private static List<int> QuickSort(List<int> array)

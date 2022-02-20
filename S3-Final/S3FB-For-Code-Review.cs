@@ -1,6 +1,6 @@
 ﻿/*
-ID 65332764
-отчёт https://contest.yandex.ru/contest/23815/run-report/65332764/
+ID 65349921
+отчёт https://contest.yandex.ru/contest/23815/run-report/65349921/
 задача https://contest.yandex.ru/contest/23815/problems/B/
 
 -- ПРИНЦИП РАБОТЫ --
@@ -27,6 +27,10 @@ ID 65332764
 Пространственная сложность сортировки определяется глубиной рекурсии * локальные параметры на каждом шаге 
 (left, right), которые занимают O(1). Поскольку глубина рекурсии в среднем составляет O(log N), а в худшем
 случае O(N), то пространственная сложность O(log N) в среднем и O(N) в худшем случае.
+-- ПРАВКИ --
+Исправил последовательность writer.Close() / reader.Close(); убрал ReadInt(). 
+Исключение ArgumentException("Object is not an Intern") теперь выбрасывается по умолчанию 
+в конце блока кода метода, без else.
 */
 
 using System;
@@ -45,18 +49,13 @@ namespace S3FB
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            int n = ReadInt();
+            int n = int.Parse(reader.ReadLine());
             List<Intern> interns = ReadInternsInfo(n);
             MemoryEffectiveQuickSort<Intern>.Sort(interns);
             PrintInternsLogins(interns);
 
-            reader.Close();
             writer.Close();
-        }
-
-        private static int ReadInt()
-        {
-            return int.Parse(reader.ReadLine());
+            reader.Close();
         }
 
         private static List<Intern> ReadInternsInfo(int n)
@@ -176,7 +175,6 @@ namespace S3FB
             Intern otherIntern = obj as Intern;
             if (otherIntern != null)
             {
-                //return this.temperatureF.CompareTo(otherIntern.temperatureF);
                 if (this.SolvedTasksNr != otherIntern.SolvedTasksNr)
                     return otherIntern.SolvedTasksNr.CompareTo(this.SolvedTasksNr);
                 else if (this.Penalty != otherIntern.Penalty)
@@ -184,8 +182,7 @@ namespace S3FB
                 else
                     return this.Login.CompareTo(otherIntern.Login);
             }
-            else
-                throw new ArgumentException("Object is not an Intern");
+            throw new ArgumentException("Object is not an Intern");
         }
     }
 }

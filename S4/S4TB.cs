@@ -1,9 +1,12 @@
-﻿using System;
+﻿// не решена
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
-namespace S4TA
+namespace S4TB
 {
     class Solution
     {
@@ -15,12 +18,21 @@ namespace S4TA
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            int q = ReadInt(); 
-            int m = ReadInt();
-            string s = reader.ReadLine();
+            int q = 1000;
+            int m = 123_987_123;
 
+            int n = ReadInt();
+            string s = RandomString(n);
             int hash = CalcHash(s, q, m);
+            writer.WriteLine(s);
             writer.WriteLine(hash);
+
+            //int q = ReadInt(); 
+            //int m = ReadInt();
+            //string s = reader.ReadLine();
+
+            //int hash = CalcHash(s, q, m);
+            //writer.WriteLine(hash);
 
             writer.Close();
             reader.Close();
@@ -43,5 +55,27 @@ namespace S4TA
             }
             return (int)hash;
         }
+
+        private static string RandomString(int n)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < n; i++)
+            {
+                sb.Append(RandomChar());
+            }
+            return sb.ToString();
+        }
+
+        private static Random random = new Random();
+
+        private static char RandomChar()
+        {
+            int l1 = (int)'a';
+            int l2 = (int)'z';
+            char c = (char)random.Next(l1, l2 + 1);
+            return c;
+        }
+
+
     }
 }

@@ -141,6 +141,7 @@ namespace S4FB
                 }
                 else // коллизия
                 {
+                    step++;
                     index = GetArrayIndex(key, step);
                 }
                 if (index == startIndex) //пришли снова в стартовый индекс
@@ -172,6 +173,7 @@ namespace S4FB
                 }
                 else // коллизия
                 {
+                    step++;
                     index = GetArrayIndex(key, step);
                 }
                 if (index == startIndex) //пришли снова в стартовый индес
@@ -200,6 +202,7 @@ namespace S4FB
                 }
                 else // коллизия
                 {
+                    step++;
                     index = GetArrayIndex(key, step);
                 }
                 if (index == startIndex) //пришли снова в стартовый индес

@@ -9,7 +9,7 @@ namespace General
     {
         public static void Main(string[] args)
         {
-            S4TG.Solution.Main(args);
+            S4FB.Solution.Main(args);
         }
     }
 }

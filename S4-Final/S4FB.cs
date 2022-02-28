@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,14 +18,31 @@ namespace S4FB
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            int n = int.Parse(reader.ReadLine());
+            Stopwatch stopwatch = new Stopwatch();
+
+            var (n, inputLines) = ReadFromTextFile();
+            //var (n, inputLines) = ReadFromConsole();
+
+            stopwatch.Reset();
+            stopwatch.Start();
             HashMap hashMap = new HashMap();
-                        
+            stopwatch.Stop();
+            double elapsedSec2 = stopwatch.Elapsed.TotalSeconds;
+            writer.WriteLine("Elapsed2: " + elapsedSec2);
+
+            stopwatch.Reset();
+            stopwatch.Start();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < n; i++)
             {
-                ParseCommand(hashMap, reader.ReadLine());
+                ParseCommand(hashMap, inputLines[i], sb); //reader.ReadLine()
             }
-            
+            stopwatch.Stop();
+            double elapsedSec3 = stopwatch.Elapsed.TotalSeconds;
+            writer.WriteLine("Elapsed3: " + elapsedSec3);
+
+            writer.WriteLine(sb.ToString());
+
             /*List<string> commands = Test.GenerateTestData(n);
             for (int i = 0; i < n; i++)
             {
@@ -35,7 +53,27 @@ namespace S4FB
             reader.Close();
         }
 
-        private static void ParseCommand(HashMap hashMap, string commandLine)
+        private static (int, List<string>) ReadFromTextFile()
+        {
+            string text = System.IO.File.ReadAllText(@"..\net5.0\S4-Final\S4FB-20");
+            List<string> inputLines = text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            int n = int.Parse(inputLines[0]);
+            inputLines = inputLines.GetRange(1, n);
+            return (n, inputLines);
+        }
+
+        private static (int, List<string>) ReadFromConsole()
+        {
+            int n = int.Parse(reader.ReadLine());
+            List<string> inputLines = new List<string>(n);
+            for (int i = 0; i < n; i++)
+            {
+                inputLines.Add(reader.ReadLine()); //reader.ReadLine()
+            }
+            return (n, inputLines);
+        }
+
+        private static void ParseCommand(HashMap hashMap, string commandLine, StringBuilder sb)
         {
             string[] commandParts = commandLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string command = commandParts[0];
@@ -43,32 +81,36 @@ namespace S4FB
             switch (command)
             {
                 case "put":
-                    key = Convert.ToUInt32(commandParts[1]);
-                    value = Convert.ToUInt32(commandParts[2]);
+                    key = uint.Parse(commandParts[1]);
+                    value = uint.Parse(commandParts[2]);
                     hashMap.Put(key, value);
                     break;
                 case "get":
-                    key = Convert.ToUInt32(commandParts[1]);
+                    key = uint.Parse(commandParts[1]);
                     try
                     {
                         value = hashMap.Get(key);
-                        writer.WriteLine(value);
+                        sb.Append(value);
+                        sb.Append("\r\n");
                     }
                     catch (InvalidOperationException e)
                     {
-                        writer.WriteLine(e.Message);
+                        sb.Append(e.Message);
+                        sb.Append("\r\n");
                     }
                     break;
                 case "delete":
-                    key = Convert.ToUInt32(commandParts[1]);
+                    key = uint.Parse(commandParts[1]);
                     try
                     {
                         value = hashMap.Delete(key);
-                        writer.WriteLine(value);
+                        sb.Append(value);
+                        sb.Append("\r\n");
                     }
                     catch (InvalidOperationException e)
                     {
-                        writer.WriteLine(e.Message);
+                        sb.Append(e.Message);
+                        sb.Append("\r\n");
                     }
                     break;
             }
@@ -119,7 +161,7 @@ namespace S4FB
 
         private int GetArrayIndex(uint key, int step)
         {
-            return (int)((key + c1 * step + c2 * (int)Math.Pow(step, 2)) % backingArraySize);
+            return (int)((key + c1 * step + c2 * step * step) % backingArraySize);
         }
 
         public void Put(uint key, uint value)

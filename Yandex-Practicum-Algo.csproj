@@ -35,4 +35,10 @@
     <Resource Include="Ready\Example3.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="S4-Final\S4FB-20">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

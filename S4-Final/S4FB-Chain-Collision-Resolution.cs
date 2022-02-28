@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,12 +19,24 @@ namespace S4FB_CCR
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            int n = int.Parse(reader.ReadLine());
+            var (n, inputLines) = ReadFromTextFile();
+            //var (n, inputLines) = ReadFromConsole();
             HashMap hashMap = new HashMap();
 
-            for (int i = 0; i < n; i++)
+            List<string> badOperations = new List<string>();
+            List<double> elTime = new List<double>();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 120000; i++) //int i = 0; i < n; i++
             {
-                ParseCommand(hashMap, reader.ReadLine());
+                DateTime t1 = DateTime.Now;
+                string operation = inputLines[i];
+                ParseCommand(hashMap, operation, sb);
+                double elapsedTime = (DateTime.Now - t1).TotalMilliseconds;
+                elTime.Add(elapsedTime);
+                if (elapsedTime > 5d)
+                    badOperations.Add(operation);
+                if (i == 16941)
+                    ;
             }
             /* List<string> commands = Test.GenerateTestData(n);
             for (int i = 0; i < n; i++)
@@ -30,11 +44,67 @@ namespace S4FB_CCR
                 ParseCommand(hashMap, commands[i]);
             }*/
 
+            WriteDoubleListToFile(elTime);
+            WriteDoubleListToFile(hashMap, 100000);
+
+            writer.WriteLine(sb.ToString());
+
             writer.Close();
             reader.Close();
         }
 
-        private static void ParseCommand(HashMap hashMap, string commandLine)
+        private static (int, List<string>) ReadFromTextFile()
+        {
+            string text = System.IO.File.ReadAllText(@"..\net5.0\S4-Final\S4FB-20");
+            List<string> inputLines = text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            int n = int.Parse(inputLines[0]);
+            inputLines = inputLines.GetRange(1, n);
+            return (n, inputLines);
+        }
+
+        private static (int, List<string>) ReadFromConsole()
+        {
+            int n = int.Parse(reader.ReadLine());
+            List<string> inputLines = new List<string>(n);
+            for (int i = 0; i < n; i++)
+            {
+                inputLines.Add(reader.ReadLine()); //reader.ReadLine()
+            }
+            return (n, inputLines);
+        }
+
+        private static void WriteDoubleListToFile(List<double> elTime)
+        {
+            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-time.txt"))
+            {
+                foreach (var v in elTime)
+                    tw.WriteLine(v.ToString("F5", CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void WriteDoubleListToFile(HashMap hashMap, int lastIndex)
+        {
+            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-cell-filling.txt"))
+            {
+                for (int i = 0; i < hashMap.array.Length; i++)
+                {
+                    var list = hashMap.array[i];
+                    int count = (list != null) ? list.Count : 0;
+                    tw.WriteLine(count.ToString("F5", CultureInfo.InvariantCulture));
+                }
+            }
+        }
+
+        private static void WriteBadOperations(List<string> badOperations)
+        {
+            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-bad-operations.txt"))
+            {
+                foreach (var op in badOperations)
+                    tw.WriteLine(op);
+            }
+        }
+
+        private static void ParseCommand(HashMap hashMap, string commandLine, StringBuilder sb)
         {
             string[] commandParts = commandLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string command = commandParts[0];
@@ -42,32 +112,36 @@ namespace S4FB_CCR
             switch (command)
             {
                 case "put":
-                    key = Convert.ToUInt32(commandParts[1]);
-                    value = Convert.ToUInt32(commandParts[2]);
+                    key = uint.Parse(commandParts[1]);
+                    value = uint.Parse(commandParts[2]);
                     hashMap.Put(key, value);
                     break;
                 case "get":
-                    key = Convert.ToUInt32(commandParts[1]);
+                    key = uint.Parse(commandParts[1]);
                     try
                     {
                         value = hashMap.Get(key);
-                        writer.WriteLine(value);
+                        sb.Append(value);
+                        sb.Append("\r\n");
                     }
                     catch (InvalidOperationException e)
                     {
-                        writer.WriteLine(e.Message);
+                        sb.Append(e.Message);
+                        sb.Append("\r\n");
                     }
                     break;
                 case "delete":
-                    key = Convert.ToUInt32(commandParts[1]);
+                    key = uint.Parse(commandParts[1]);
                     try
                     {
                         value = hashMap.Delete(key);
-                        writer.WriteLine(value);
+                        sb.Append(value);
+                        sb.Append("\r\n");
                     }
                     catch (InvalidOperationException e)
                     {
-                        writer.WriteLine(e.Message);
+                        sb.Append(e.Message);
+                        sb.Append("\r\n");
                     }
                     break;
             }
@@ -82,7 +156,7 @@ namespace S4FB_CCR
         /// </summary>
         private double loadFactor = 0.4;
         private uint backingArraySize;
-        private LinkedList<KeyValue>[] array; //коллизии разрешаются методом цепочек
+        public LinkedList<KeyValue>[] array; //private //коллизии разрешаются методом цепочек
         private string keyNotFoundMessage = "None";
 
         public HashMap(int keysCapacity = 100_000)
@@ -178,7 +252,7 @@ namespace S4FB_CCR
             return null;
         }
 
-        private class KeyValue
+        public class KeyValue
         {
             private uint key;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,28 +19,19 @@ namespace S4FB
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            Stopwatch stopwatch = new Stopwatch();
-
             var (n, inputLines) = ReadFromTextFile();
             //var (n, inputLines) = ReadFromConsole();
-
-            stopwatch.Reset();
-            stopwatch.Start();
             HashMap hashMap = new HashMap();
-            stopwatch.Stop();
-            double elapsedSec2 = stopwatch.Elapsed.TotalSeconds;
-            writer.WriteLine("Elapsed2: " + elapsedSec2);
 
-            stopwatch.Reset();
-            stopwatch.Start();
+            List<double> elTime = new List<double>();
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < 120000; i++) //int i = 0; i < n; i++
             {
+                DateTime t1 = DateTime.Now;
                 ParseCommand(hashMap, inputLines[i], sb); //reader.ReadLine()
+                double elapsedTime = (DateTime.Now - t1).TotalMilliseconds;
+                elTime.Add(elapsedTime);
             }
-            stopwatch.Stop();
-            double elapsedSec3 = stopwatch.Elapsed.TotalSeconds;
-            writer.WriteLine("Elapsed3: " + elapsedSec3);
 
             writer.WriteLine(sb.ToString());
 
@@ -48,6 +40,11 @@ namespace S4FB
             {
                 ParseCommand(hashMap, commands[i]);
             }*/
+
+            WriteDoubleListToFile(elTime);
+            WriteDoubleListToFile(hashMap);
+
+            writer.WriteLine(sb.ToString());
 
             writer.Close();
             reader.Close();
@@ -71,6 +68,36 @@ namespace S4FB
                 inputLines.Add(reader.ReadLine()); //reader.ReadLine()
             }
             return (n, inputLines);
+        }
+
+        private static void WriteDoubleListToFile(List<double> elTime)
+        {
+            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-time.txt"))
+            {
+                foreach (var v in elTime)
+                    tw.WriteLine(v.ToString("F5", CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void WriteDoubleListToFile(HashMap hashMap)
+        {
+            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-cell-filling.txt"))
+            {
+                for (int i = 0; i < hashMap.array.Length; i++)
+                {
+                    int cell = Convert.ToInt32(hashMap.array[i] != null && hashMap.array[i].Deleted == false);
+                    tw.WriteLine(cell.ToString("F0", CultureInfo.InvariantCulture));
+                }
+            }
+        }
+
+        private static void WriteBadOperations(List<string> badOperations)
+        {
+            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-bad-operations.txt"))
+            {
+                foreach (var op in badOperations)
+                    tw.WriteLine(op);
+            }
         }
 
         private static void ParseCommand(HashMap hashMap, string commandLine, StringBuilder sb)
@@ -123,9 +150,9 @@ namespace S4FB
         /// 0.75 - предельный адекватный фактор заполнения, при бОльших значениях 
         /// ожидаемое количество операций при поиске (например) резко возрастает
         /// </summary>
-        private double loadFactor = 0.4; 
+        private double loadFactor = 0.5; 
         private uint backingArraySize;
-        private KeyValue[] array; //коллизии разрешаются методом цепочек
+        public KeyValue[] array; //коллизии разрешаются методом цепочек
         private string keyNotFoundMessage = "None";
 
         private int c1 = 137, c2 = 9973;
@@ -254,7 +281,7 @@ namespace S4FB
             }
         }
 
-        private class KeyValue
+        public class KeyValue
         {
             private uint key;
 

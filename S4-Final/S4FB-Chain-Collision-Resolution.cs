@@ -23,7 +23,7 @@ namespace S4FB_CCR
             //var (n, inputLines) = ReadFromConsole();
             HashMap hashMap = new HashMap();
 
-            List<string> badOperations = new List<string>();
+            //List<string> badOperations = new List<string>();
             List<double> elTime = new List<double>();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < 120000; i++) //int i = 0; i < n; i++
@@ -33,10 +33,10 @@ namespace S4FB_CCR
                 ParseCommand(hashMap, operation, sb);
                 double elapsedTime = (DateTime.Now - t1).TotalMilliseconds;
                 elTime.Add(elapsedTime);
-                if (elapsedTime > 5d)
-                    badOperations.Add(operation);
-                if (i == 16941)
-                    ;
+                //if (elapsedTime > 5d)
+                //    badOperations.Add(operation);
+                //if (i == 16941)
+                //    ;
             }
             /* List<string> commands = Test.GenerateTestData(n);
             for (int i = 0; i < n; i++)
@@ -45,7 +45,7 @@ namespace S4FB_CCR
             }*/
 
             WriteDoubleListToFile(elTime);
-            WriteDoubleListToFile(hashMap, 100000);
+            WriteDoubleListToFile(hashMap);
 
             writer.WriteLine(sb.ToString());
 
@@ -82,7 +82,7 @@ namespace S4FB_CCR
             }
         }
 
-        private static void WriteDoubleListToFile(HashMap hashMap, int lastIndex)
+        private static void WriteDoubleListToFile(HashMap hashMap)
         {
             using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-cell-filling.txt"))
             {
@@ -154,7 +154,7 @@ namespace S4FB_CCR
         /// 0.75 - предельный адекватный фактор заполнения, при бОльших значениях 
         /// ожидаемое количество операций при поиске (например) резко возрастает
         /// </summary>
-        private double loadFactor = 0.4;
+        private double loadFactor = 0.5;
         private uint backingArraySize;
         public LinkedList<KeyValue>[] array; //private //коллизии разрешаются методом цепочек
         private string keyNotFoundMessage = "None";

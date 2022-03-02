@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S4FB
+namespace S4FB_OA_E
 {
     class Solution
     {
@@ -25,19 +25,20 @@ namespace S4FB
             HashMap hashMap = new HashMap();
 
             List<double> elTime = new List<double>();
-            List<int> steps = new List<int>();
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 120_000; i++) //int i = 0; i < n; i++
+            for (int i = 0; i < 120000; i++) //int i = 0; i < n; i++
             {
                 DateTime t1 = DateTime.Now;
-                steps.Add(ParseCommand(hashMap, inputLines[i], sb)); //reader.ReadLine()
+                bool exceptionTriggered = ParseCommand(hashMap, inputLines[i], sb); //reader.ReadLine()
                 double elapsedTime = (DateTime.Now - t1).TotalMilliseconds;
-                elTime.Add(elapsedTime);
-                if (elapsedTime > 2)
+                if (i == 57738)
                     ;
+                if (exceptionTriggered == true) //elapsedTime > 10d && 
+                    ;
+                elTime.Add(elapsedTime);
             }
 
-            //writer.WriteLine(sb.ToString());
+            writer.WriteLine(sb.ToString());
 
             /*List<string> commands = Test.GenerateTestData(n);
             for (int i = 0; i < n; i++)
@@ -46,8 +47,10 @@ namespace S4FB
             }*/
 
             WriteDoubleListToFile(elTime, testName);
-            WriteStepsToFile(steps, testName);
-            //WriteDoubleListToFile(hashMap, testName);
+            WriteDoubleListToFile(hashMap, testName);
+
+            WriteToFile(sb, testName);
+            writer.WriteLine(sb.ToString());
 
             writer.Close();
             reader.Close();
@@ -82,15 +85,6 @@ namespace S4FB
             }
         }
 
-        private static void WriteStepsToFile(List<int> steps, string testName)
-        {
-            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-steps.txt"))
-            {
-                foreach (var v in steps)
-                    tw.WriteLine(v.ToString("F0", CultureInfo.InvariantCulture));
-            }
-        }
-
         private static void WriteDoubleListToFile(HashMap hashMap, string testName)
         {
             using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-cf.txt"))
@@ -103,6 +97,14 @@ namespace S4FB
             }
         }
 
+        private static void WriteToFile(StringBuilder sb, string testName)
+        {
+            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-result.txt"))
+            {
+                tw.WriteLine(sb.ToString());
+            }
+        }
+
         private static void WriteBadOperations(List<string> badOperations, string testName)
         {
             using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-bad-operations.txt"))
@@ -112,9 +114,9 @@ namespace S4FB
             }
         }
 
-        private static int ParseCommand(HashMap hashMap, string commandLine, StringBuilder sb)
+        private static bool ParseCommand(HashMap hashMap, string commandLine, StringBuilder sb)
         {
-            int step = 0;
+            bool exceptionTriggered = false;
             string[] commandParts = commandLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string command = commandParts[0];
             uint key, value;
@@ -123,28 +125,41 @@ namespace S4FB
                 case "put":
                     key = uint.Parse(commandParts[1]);
                     value = uint.Parse(commandParts[2]);
-                    step = hashMap.Put(key, value);
+                    hashMap.Put(key, value);
+                    sb.Append("\r\n");
                     break;
                 case "get":
                     key = uint.Parse(commandParts[1]);
-                    (value, step) = hashMap.Get(key);
-                    if (value != uint.MaxValue)
+                    try
+                    {
+                        value = hashMap.Get(key);
                         sb.Append(value);
-                    else
-                        sb.Append(hashMap.keyNotFoundMessage);
-                    sb.Append("\r\n");
+                        sb.Append("\r\n");
+                    }
+                    catch (Exception e)
+                    {
+                        exceptionTriggered = true;
+                        sb.Append(e.Message);
+                        sb.Append("\r\n");
+                    }
                     break;
                 case "delete":
                     key = uint.Parse(commandParts[1]);
-                    (value, step) = hashMap.Delete(key);
-                    if (value != uint.MaxValue)
+                    try
+                    {
+                        value = hashMap.Delete(key);
                         sb.Append(value);
-                    else
-                        sb.Append(hashMap.keyNotFoundMessage);
-                    sb.Append("\r\n");
+                        sb.Append("\r\n");
+                    }
+                    catch (Exception e)
+                    {
+                        exceptionTriggered = true;
+                        sb.Append(e.Message);
+                        sb.Append("\r\n");
+                    }
                     break;
             }
-            return step;
+            return exceptionTriggered;
         }
     }
 
@@ -157,7 +172,7 @@ namespace S4FB
         private double loadFactor = 0.5;
         private uint backingArraySize;
         public List<KeyValue> array; //коллизии разрешаются методом цепочек
-        public string keyNotFoundMessage = "None";
+        private string keyNotFoundMessage = "None";
 
         private int c1 = (int)GetNearestLargerPrimeNumber(20_000), c2 = (int)GetNearestLargerPrimeNumber(100_000); //c1 = 137, c2 = 9973;
         //private int cL = 7;
@@ -198,7 +213,7 @@ namespace S4FB
             //return (int)((key + cL * step) % backingArraySize);
         }
 
-        public int Put(uint key, uint value)
+        public void Put(uint key, uint value)
         {
             int step = 0;
             int startIndex = GetArrayIndex(key, step);
@@ -208,12 +223,12 @@ namespace S4FB
                 if (array[index] == null || array[index].Deleted) // эта ячейка пустая
                 {
                     array[index] = new KeyValue(key, value);
-                    return step;
+                    return;
                 }
                 else if (array[index].Key == key) //перезаписываем значение
                 {
                     array[index].Value = value;
-                    return step;
+                    return;
                 }
                 else // коллизия
                 {
@@ -225,15 +240,14 @@ namespace S4FB
                     for (int i = 0; i < backingArraySize; i++)
                     {
                         if (array[i] == null || array[i].Deleted)
-                            throw new InvalidOperationException("There are empty slots, but can't reach them");
+                            throw new Exception("There are empty slots, but can't reach them");
                     }
-                    throw new InvalidOperationException("No empty slots");
+                    throw new Exception("No empty slots");
                 }
             }
-            return step;
         }
 
-        public (uint, int) Get(uint key)
+        public uint Get(uint key)
         {
             int step = 0;
             int startIndex = GetArrayIndex(key, step);
@@ -242,12 +256,11 @@ namespace S4FB
             {
                 if (array[index] == null) // не смогли найти
                 {
-                    return (uint.MaxValue, step);
-                    //throw new InvalidOperationException(keyNotFoundMessage);
+                    throw new Exception(keyNotFoundMessage);
                 }
                 else if (array[index].Key == key)
                 {
-                    return (array[index].Value, step);
+                    return array[index].Value;
                 }
                 else // коллизия
                 {
@@ -256,14 +269,12 @@ namespace S4FB
                 }
                 if (index == startIndex) //пришли снова в стартовый индес
                 {
-                    return (uint.MaxValue, step);
-                    //throw new InvalidOperationException(keyNotFoundMessage);
+                    throw new Exception(keyNotFoundMessage);
                 }
             }
-            return (uint.MaxValue, step);
         }
 
-        public (uint, int) Delete(uint key)
+        public uint Delete(uint key)
         {
             int step = 0;
             int startIndex = GetArrayIndex(key, step);
@@ -272,14 +283,13 @@ namespace S4FB
             {
                 if (array[index] == null) // не смогли найти
                 {
-                    return (uint.MaxValue, step);
-                    //throw new InvalidOperationException(keyNotFoundMessage);
+                    throw new Exception(keyNotFoundMessage);
                 }
                 else if (array[index].Key == key)
                 {
                     uint value = array[index].Value;
                     array[index] = new KeyValue(true);
-                    return (value, step);
+                    return value;
                 }
                 else // коллизия
                 {
@@ -288,11 +298,9 @@ namespace S4FB
                 }
                 if (index == startIndex) //пришли снова в стартовый индес
                 {
-                    return (uint.MaxValue, step);
-                    //throw new InvalidOperationException(keyNotFoundMessage);
+                    throw new Exception(keyNotFoundMessage);
                 }
             }
-            return (uint.MaxValue, step);
         }
 
         public class KeyValue

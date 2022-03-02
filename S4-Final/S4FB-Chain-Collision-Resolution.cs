@@ -19,18 +19,20 @@ namespace S4FB_CCR
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            var (n, inputLines) = ReadFromTextFile();
+            string testName = "T20M";
+            var (n, inputLines) = ReadFromTextFile(testName);
             //var (n, inputLines) = ReadFromConsole();
             HashMap hashMap = new HashMap();
 
             //List<string> badOperations = new List<string>();
             List<double> elTime = new List<double>();
+            List<int> steps = new List<int>();
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 120000; i++) //int i = 0; i < n; i++
+            for (int i = 0; i < n; i++) //int i = 0; i < n; i++
             {
                 DateTime t1 = DateTime.Now;
                 string operation = inputLines[i];
-                ParseCommand(hashMap, operation, sb);
+                steps.Add(ParseCommand(hashMap, operation, sb));
                 double elapsedTime = (DateTime.Now - t1).TotalMilliseconds;
                 elTime.Add(elapsedTime);
                 //if (elapsedTime > 5d)
@@ -45,17 +47,18 @@ namespace S4FB_CCR
             }*/
 
             WriteDoubleListToFile(elTime);
-            WriteDoubleListToFile(hashMap);
+            WriteStepsToFile(steps, testName);
+            //WriteDoubleListToFile(hashMap);
 
-            writer.WriteLine(sb.ToString());
+            //writer.WriteLine(sb.ToString());
 
             writer.Close();
             reader.Close();
         }
 
-        private static (int, List<string>) ReadFromTextFile()
+        private static (int, List<string>) ReadFromTextFile(string testName)
         {
-            string text = System.IO.File.ReadAllText(@"..\net5.0\S4-Final\S4FB-20");
+            string text = System.IO.File.ReadAllText(@$"..\net5.0\S4-Final\{testName}");
             List<string> inputLines = text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
             int n = int.Parse(inputLines[0]);
             inputLines = inputLines.GetRange(1, n);
@@ -75,7 +78,7 @@ namespace S4FB_CCR
 
         private static void WriteDoubleListToFile(List<double> elTime)
         {
-            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-time.txt"))
+            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\time.txt"))
             {
                 foreach (var v in elTime)
                     tw.WriteLine(v.ToString("F5", CultureInfo.InvariantCulture));
@@ -84,7 +87,7 @@ namespace S4FB_CCR
 
         private static void WriteDoubleListToFile(HashMap hashMap)
         {
-            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-cell-filling.txt"))
+            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\cell_filling.txt"))
             {
                 for (int i = 0; i < hashMap.array.Length; i++)
                 {
@@ -92,6 +95,15 @@ namespace S4FB_CCR
                     int count = (list != null) ? list.Count : 0;
                     tw.WriteLine(count.ToString("F5", CultureInfo.InvariantCulture));
                 }
+            }
+        }
+
+        private static void WriteStepsToFile(List<int> steps, string testName)
+        {
+            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-steps.txt"))
+            {
+                foreach (var v in steps)
+                    tw.WriteLine(v.ToString("F0", CultureInfo.InvariantCulture));
             }
         }
 
@@ -104,8 +116,9 @@ namespace S4FB_CCR
             }
         }
 
-        private static void ParseCommand(HashMap hashMap, string commandLine, StringBuilder sb)
+        private static int ParseCommand(HashMap hashMap, string commandLine, StringBuilder sb)
         {
+            int step = 0;
             string[] commandParts = commandLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string command = commandParts[0];
             uint key, value;
@@ -114,37 +127,28 @@ namespace S4FB_CCR
                 case "put":
                     key = uint.Parse(commandParts[1]);
                     value = uint.Parse(commandParts[2]);
-                    hashMap.Put(key, value);
+                    step = hashMap.Put(key, value);
                     break;
                 case "get":
                     key = uint.Parse(commandParts[1]);
-                    try
-                    {
-                        value = hashMap.Get(key);
+                    (value, step) = hashMap.Get(key);
+                    if (value != uint.MaxValue)
                         sb.Append(value);
-                        sb.Append("\r\n");
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                        sb.Append(e.Message);
-                        sb.Append("\r\n");
-                    }
+                    else
+                        sb.Append(hashMap.keyNotFoundMessage);
+                    sb.Append("\r\n");
                     break;
                 case "delete":
                     key = uint.Parse(commandParts[1]);
-                    try
-                    {
-                        value = hashMap.Delete(key);
+                    (value, step) = hashMap.Delete(key);
+                    if (value != uint.MaxValue)
                         sb.Append(value);
-                        sb.Append("\r\n");
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                        sb.Append(e.Message);
-                        sb.Append("\r\n");
-                    }
+                    else
+                        sb.Append(hashMap.keyNotFoundMessage);
+                    sb.Append("\r\n");
                     break;
             }
+            return step;
         }
     }
 
@@ -157,7 +161,7 @@ namespace S4FB_CCR
         private double loadFactor = 0.5;
         private uint backingArraySize;
         public LinkedList<KeyValue>[] array; //private //коллизии разрешаются методом цепочек
-        private string keyNotFoundMessage = "None";
+        public string keyNotFoundMessage = "None";
 
         public HashMap(int keysCapacity = 100_000)
         {
@@ -201,55 +205,62 @@ namespace S4FB_CCR
             return (int)(key % backingArraySize);
         }
 
-        public void Put(uint key, uint value)
+        public int Put(uint key, uint value)
         {
             int index = GetArrayIndex(key);
             LinkedList<KeyValue> chain = array[index];
             if (chain == null)
                 chain = (array[index] = new LinkedList<KeyValue>());
-            var node = FindInList(chain, key);
+            var (node, step) = FindInList(chain, key);
             if (node != null)
                 node.Value.Value = value; //перезаписываем значение
             else
                 chain.AddLast(new KeyValue(key, value));
+            return step;
         }
 
-        public uint Get(uint key)
+        public (uint, int) Get(uint key)
         {
             int index = GetArrayIndex(key);
             LinkedList<KeyValue> chain = array[index];
             if (chain == null)
-                throw new InvalidOperationException(keyNotFoundMessage);
-            var node = FindInList(chain, key);
+                return (uint.MaxValue, 0);
+                //throw new InvalidOperationException(keyNotFoundMessage);
+            var (node, step) = FindInList(chain, key);
             if (node == null)
-                throw new InvalidOperationException(keyNotFoundMessage);
-            return node.Value.Value;
+                return (uint.MaxValue, step);
+                //throw new InvalidOperationException(keyNotFoundMessage);
+            return (node.Value.Value, step);
         }
 
-        public uint Delete(uint key)
+        public (uint, int) Delete(uint key)
         {
             int index = GetArrayIndex(key);
             LinkedList<KeyValue> chain = array[index];
             if (chain == null)
-                throw new InvalidOperationException(keyNotFoundMessage);
-            var node = FindInList(chain, key);
+                return (uint.MaxValue, 0);
+                //throw new InvalidOperationException(keyNotFoundMessage);
+            var (node, step) = FindInList(chain, key);
             if (node == null)
-                throw new InvalidOperationException(keyNotFoundMessage);
+                return (uint.MaxValue, step);
+                //throw new InvalidOperationException(keyNotFoundMessage);
             uint value = node.Value.Value;
             chain.Remove(node.Value); //~~
-            return value;
+            return (value, step);
         }
 
-        private LinkedListNode<KeyValue> FindInList(LinkedList<KeyValue> list, uint key)
+        private (LinkedListNode<KeyValue>, int) FindInList(LinkedList<KeyValue> list, uint key)
         {
+            int step = 0;
             var node = list.First;
             while (node != null)
             {
                 if (node.Value.Key == key)
-                    return node;
+                    return (node, step);
                 node = node.Next;
+                step++;
             }
-            return null;
+            return (null, step);
         }
 
         public class KeyValue

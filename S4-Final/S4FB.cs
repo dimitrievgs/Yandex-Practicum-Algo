@@ -19,7 +19,8 @@ namespace S4FB
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            var (n, inputLines) = ReadFromTextFile();
+            string testName = "T20M";
+            var (n, inputLines) = ReadFromTextFile(testName);
             //var (n, inputLines) = ReadFromConsole();
             HashMap hashMap = new HashMap();
 
@@ -41,8 +42,8 @@ namespace S4FB
                 ParseCommand(hashMap, commands[i]);
             }*/
 
-            WriteDoubleListToFile(elTime);
-            WriteDoubleListToFile(hashMap);
+            WriteDoubleListToFile(elTime, testName);
+            WriteDoubleListToFile(hashMap, testName);
 
             writer.WriteLine(sb.ToString());
 
@@ -50,9 +51,9 @@ namespace S4FB
             reader.Close();
         }
 
-        private static (int, List<string>) ReadFromTextFile()
+        private static (int, List<string>) ReadFromTextFile(string testName)
         {
-            string text = System.IO.File.ReadAllText(@"..\net5.0\S4-Final\S4FB-20");
+            string text = System.IO.File.ReadAllText(@$"..\net5.0\S4-Final\{testName}");
             List<string> inputLines = text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
             int n = int.Parse(inputLines[0]);
             inputLines = inputLines.GetRange(1, n);
@@ -70,20 +71,20 @@ namespace S4FB
             return (n, inputLines);
         }
 
-        private static void WriteDoubleListToFile(List<double> elTime)
+        private static void WriteDoubleListToFile(List<double> elTime, string testName)
         {
-            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-time.txt"))
+            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-time.txt"))
             {
                 foreach (var v in elTime)
                     tw.WriteLine(v.ToString("F5", CultureInfo.InvariantCulture));
             }
         }
 
-        private static void WriteDoubleListToFile(HashMap hashMap)
+        private static void WriteDoubleListToFile(HashMap hashMap, string testName)
         {
-            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-cell-filling.txt"))
+            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-cf.txt"))
             {
-                for (int i = 0; i < hashMap.array.Length; i++)
+                for (int i = 0; i < hashMap.array.Count; i++)
                 {
                     int cell = Convert.ToInt32(hashMap.array[i] != null && hashMap.array[i].Deleted == false);
                     tw.WriteLine(cell.ToString("F0", CultureInfo.InvariantCulture));
@@ -91,9 +92,9 @@ namespace S4FB
             }
         }
 
-        private static void WriteBadOperations(List<string> badOperations)
+        private static void WriteBadOperations(List<string> badOperations, string testName)
         {
-            using (TextWriter tw = new StreamWriter(@"..\net5.0\S4-Final\S4FB-20-bad-operations.txt"))
+            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-bad-operations.txt"))
             {
                 foreach (var op in badOperations)
                     tw.WriteLine(op);
@@ -152,19 +153,21 @@ namespace S4FB
         /// </summary>
         private double loadFactor = 0.5; 
         private uint backingArraySize;
-        public KeyValue[] array; //коллизии разрешаются методом цепочек
+        public List<KeyValue> array; //коллизии разрешаются методом цепочек
         private string keyNotFoundMessage = "None";
 
-        private int c1 = 137, c2 = 9973;
+        private int c1 = (int)GetNearestLargerPrimeNumber(20_000), c2 = (int)GetNearestLargerPrimeNumber(100_000); //c1 = 137, c2 = 9973;
+        //private int cL = 7;
 
         public HashMap(int keysCapacity = 100_000)
         {
             backingArraySize = (uint)(keysCapacity / loadFactor); //чтобы получить предельный адекватный фактор заполнения
             backingArraySize = GetNearestLargerPrimeNumber(backingArraySize); //13337
-            array = new KeyValue[backingArraySize];
+            //array = new List<KeyValue>((int)backingArraySize);
+            array = new List<KeyValue>(new KeyValue[backingArraySize]);
         }
 
-        private uint GetNearestLargerPrimeNumber(uint n)
+        private static uint GetNearestLargerPrimeNumber(uint n)
         {
             uint i = n;
             while (!IsPrime(i))
@@ -172,7 +175,7 @@ namespace S4FB
             return i;
         }
 
-        private bool IsPrime(uint n)
+        private static bool IsPrime(uint n)
         {
             if (n == 1)
                 return false;
@@ -189,6 +192,7 @@ namespace S4FB
         private int GetArrayIndex(uint key, int step)
         {
             return (int)((key + c1 * step + c2 * step * step) % backingArraySize);
+            //return (int)((key + cL * step) % backingArraySize);
         }
 
         public void Put(uint key, uint value)

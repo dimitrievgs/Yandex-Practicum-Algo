@@ -1,4 +1,39 @@
-﻿using System;
+﻿/*
+ID 65699123
+отчёт https://contest.yandex.ru/contest/24414/run-report/65699123/
+задача https://contest.yandex.ru/contest/24414/problems/A/
+
+-- ПРИНЦИП РАБОТЫ --
+По условиям задачи нужно для каждого запроса вывести 5 самых релевантных
+документов, по убыванию релевантности (частоте встречаемости слов запроса
+в документах) и затем по возрастанию индексов документов.
+Для этого создаются специальная структура для поиска из HashMap, ключами которой
+выступают уникальные слова документов, а значениями - также HashMap, где, 
+в свою очередь, ключ - индекс документа, где это слово встречается, а значение - 
+сколько раз это слово в этом документе появляется.
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Это позволяет в процессе считывания каждого документа попутно "посчитать" слова,
+которые в него входят, и прилинковать индекс данного документа и частоту вхождения
+к каждому слову.
+Затем в процессе считывания каждого запроса пройтись по каждому слову запроса и
+вытащить всю информацию, в каких документах и сколько раз это слово входит. Пройдясь
+по всем словам запроса мы суммируем эту информацию и получаем список релевантных документов.
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Пусть n - кол-во документов, m - кол-во запросов.
+Тогда чтение всех документов и построение структуры для поиска происходит за:
+O(Σn (n_doc_words * 1[HashMap])) = O(all_docs_words_without_uniqueness)
+Затем считываем по очереди запросы и суммируем встречаемость всех слов 
+каждого запроса в документах, сортируем релевантность:
+O(Σm (m_request_words * request_word_occurences_in_docs[суммируем встречаемость] 
+    + request_s_docs[перегоняем данные] + request_s_docs * log(request_s_docs)[сортировка])
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+Структура DocWords: 
+O(all_docs_unique_words * custom_word_occurrences_in_docs[структура для поиска]
+Структуры Request:
+O(m * (request_word + request_occurences_in_docs_first_5))
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -123,6 +158,7 @@ namespace S4FA
                 words.Add(word);
 
             Dictionary<int, int> requestWordsInDocs = new Dictionary<int, int>();
+            // суммируем встречаемость в документах данного запроса, пройдясь по всем словам запроса
             foreach (string requestWord in Words)
             {
                 var docsOccurences = docWords.GetOccurrencesInDocuments(requestWord);
@@ -139,9 +175,8 @@ namespace S4FA
             }
             DocsRelevancyCounter = new List<DocRelevancy>();
             foreach (var el in requestWordsInDocs)
-            {
                 DocsRelevancyCounter.Add(new DocRelevancy(el.Key, el.Value));
-            }
+            // сортируем релевантность документов и берём первые 5
             DocsRelevancyCounter.Sort();
             int maxRange = Math.Min(5, DocsRelevancyCounter.Count);
             DocsRelevancyCounter = DocsRelevancyCounter.GetRange(0, maxRange);

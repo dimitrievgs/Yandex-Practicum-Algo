@@ -1,11 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
+﻿/*
+ID 65697013
+отчёт https://contest.yandex.ru/contest/24414/run-report/65697013/
+задача https://contest.yandex.ru/contest/24414/problems/B/
+
+-- ПРИНЦИП РАБОТЫ --
+По условиям задачи нужно реализовать структуру HashMap с методами void Put(uint key, uint value),
+uint Get(uint key) и uint Delete(uint key). 
+Реализую через массив и хеш-функцию, которая берётся как остаток от деления ключа на размер массива
+(метод деления). Для разрешение коллизий используется метод открытой адресации, квадратичное пробирование.
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Беру фактор заполнения 0.5, принимая во внимание, что 0.75 - предельный адекватный фактор заполнения, 
+при бОльших значениях ожидаемое количество операций для put/get/delete резко возрастает.
+По условиям задачи предполагается, что при обработке входных данных не случится переполнение массива.
+Поэтому я беру фиксированный размер массива как (максимальное_кол-во_ключей / фактор_заполнения)
+и ищу ближайшее простое число выше этого значения, чтобы избежать ненужных корреляций и добиться
+максимально равномерного заполнения массива HashMap'а.
+Рехеширование и масштабирование HashMap делать по условиям задачи не требуется, потому я беру 
+этот размер массива как фиксированный. 
+Также для квадратичного пробирования для констант c1 и c2 я беру простые числа, сопоставимые с
+размером массива, избегая общих множителей для максимального распределения ключей.
+Функция определения индекса массива для записи пары ключ-значение корректна, т.к. обладает всеми
+основными свойствами: 
+- Детерминизмом (для одних и тех же данных функция всегда возвращает одно и то же значение).
+- Эффективностью (быстро вычисляется, дополнительно для подсчёта квадрата использую step*step вместо Math.Pow(...))
+- Ограниченностью (результат вычисления функции принадлежит диапазону от 0 до M-1, где M — размер массива, 
+используемого для реализации HashMap).
+- Равномерностью (данные в хеш-таблице распределяются равномерно. Это достигается подбором простых M, c1, c2, 
+для уменьшения кластеризации константы c1 и c2 выбраны сопоставимыми по значению M).
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Временная сложность операций в худщем случае (квадратичное пробирование):
+Put / Get / Delete: O(n) — Если все ключи сопоставляются одним и тем же индексам массива, мы должны осуществлять пробирование для всех n ключей
+Временная сложность операций в среднем
+Put / Get / Delete: O(1 + alpha), где alpha = N / M (N - кол-во пар ключ-значение, добавленных в таблицу, M - размер массива).
+Поскольку для эффективной работы HashMap alpha стараются брать в ограниченном диапазоне < 0.75, то можно сказать,
+что средняя временная сложность O(1).
+Временная сложность операций в лучшем случае
+Put / Get / Delete: O(1) - нет коллизий
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+Пространственная сложность (квадратичное пробирование):
+O(n) — размер массива HashMap'а принято брать как M, деленную на константу "фактор заполнения", для открытой адресации её выбирают 
+в определённом дипазоне, например между 0.3 и 0.75.
+*/
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S4FB
 {
@@ -19,135 +57,57 @@ namespace S4FB
             reader = new StreamReader(Console.OpenStandardInput());
             writer = new StreamWriter(Console.OpenStandardOutput());
 
-            string testName = "T20M";
-            var (n, inputLines) = ReadFromTextFile(testName);
-            //var (n, inputLines) = ReadFromConsole();
+            int n = int.Parse(reader.ReadLine());
             HashMap hashMap = new HashMap();
-
-            List<double> elTime = new List<double>();
-            List<int> steps = new List<int>();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 120_000; i++) //int i = 0; i < n; i++
-            {
-                DateTime t1 = DateTime.Now;
-                steps.Add(ParseCommand(hashMap, inputLines[i], sb)); //reader.ReadLine()
-                double elapsedTime = (DateTime.Now - t1).TotalMilliseconds;
-                elTime.Add(elapsedTime);
-                if (elapsedTime > 2)
-                    ;
-            }
-
-            //writer.WriteLine(sb.ToString());
-
-            /*List<string> commands = Test.GenerateTestData(n);
             for (int i = 0; i < n; i++)
-            {
-                ParseCommand(hashMap, commands[i]);
-            }*/
-
-            WriteDoubleListToFile(elTime, testName);
-            WriteStepsToFile(steps, testName);
-            //WriteDoubleListToFile(hashMap, testName);
+                ParseCommand(hashMap, reader.ReadLine());
 
             writer.Close();
             reader.Close();
         }
 
-        private static (int, List<string>) ReadFromTextFile(string testName)
+        private static void ParseCommand(HashMap hashMap, string commandLine)
         {
-            string text = System.IO.File.ReadAllText(@$"..\net5.0\S4-Final\{testName}");
-            List<string> inputLines = text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            int n = int.Parse(inputLines[0]);
-            inputLines = inputLines.GetRange(1, n);
-            return (n, inputLines);
-        }
-
-        private static (int, List<string>) ReadFromConsole()
-        {
-            int n = int.Parse(reader.ReadLine());
-            List<string> inputLines = new List<string>(n);
-            for (int i = 0; i < n; i++)
-            {
-                inputLines.Add(reader.ReadLine()); //reader.ReadLine()
-            }
-            return (n, inputLines);
-        }
-
-        private static void WriteDoubleListToFile(List<double> elTime, string testName)
-        {
-            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-time.txt"))
-            {
-                foreach (var v in elTime)
-                    tw.WriteLine(v.ToString("F5", CultureInfo.InvariantCulture));
-            }
-        }
-
-        private static void WriteStepsToFile(List<int> steps, string testName)
-        {
-            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-steps.txt"))
-            {
-                foreach (var v in steps)
-                    tw.WriteLine(v.ToString("F0", CultureInfo.InvariantCulture));
-            }
-        }
-
-        private static void WriteDoubleListToFile(HashMap hashMap, string testName)
-        {
-            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-cf.txt"))
-            {
-                for (int i = 0; i < hashMap.array.Count; i++)
-                {
-                    int cell = Convert.ToInt32(hashMap.array[i] != null && hashMap.array[i].Deleted == false);
-                    tw.WriteLine(cell.ToString("F0", CultureInfo.InvariantCulture));
-                }
-            }
-        }
-
-        private static void WriteBadOperations(List<string> badOperations, string testName)
-        {
-            using (TextWriter tw = new StreamWriter(@$"..\net5.0\S4-Final\{testName}-bad-operations.txt"))
-            {
-                foreach (var op in badOperations)
-                    tw.WriteLine(op);
-            }
-        }
-
-        private static int ParseCommand(HashMap hashMap, string commandLine, StringBuilder sb)
-        {
-            int step = 0;
             string[] commandParts = commandLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string command = commandParts[0];
             uint key, value;
             switch (command)
             {
                 case "put":
-                    key = uint.Parse(commandParts[1]);
-                    value = uint.Parse(commandParts[2]);
-                    step = hashMap.Put(key, value);
+                    try
+                    {
+                        key = uint.Parse(commandParts[1]);
+                        value = uint.Parse(commandParts[2]);
+                        hashMap.Put(key, value);
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        writer.WriteLine(e.Message);
+                    }
                     break;
                 case "get":
                     key = uint.Parse(commandParts[1]);
-                    (value, step) = hashMap.Get(key);
+                    value = hashMap.Get(key);
                     if (value != uint.MaxValue)
-                        sb.Append(value);
+                        writer.WriteLine(value);
                     else
-                        sb.Append(hashMap.keyNotFoundMessage);
-                    sb.Append("\r\n");
+                        writer.WriteLine(HashMap.keyNotFoundMessage);
                     break;
                 case "delete":
                     key = uint.Parse(commandParts[1]);
-                    (value, step) = hashMap.Delete(key);
+                    value = hashMap.Delete(key);
                     if (value != uint.MaxValue)
-                        sb.Append(value);
+                        writer.WriteLine(value);
                     else
-                        sb.Append(hashMap.keyNotFoundMessage);
-                    sb.Append("\r\n");
+                        writer.WriteLine(HashMap.keyNotFoundMessage);
                     break;
             }
-            return step;
         }
     }
 
+    /// <summary>
+    /// Коллизии разрешаются методом открытой адресации
+    /// </summary>
     class HashMap
     {
         /// <summary>
@@ -156,18 +116,15 @@ namespace S4FB
         /// </summary>
         private double loadFactor = 0.5;
         private uint backingArraySize;
-        public List<KeyValue> array; //коллизии разрешаются методом цепочек
-        public string keyNotFoundMessage = "None";
+        public KeyValue[] array;
+        public const string keyNotFoundMessage = "None";
 
-        private int c1 = (int)GetNearestLargerPrimeNumber(20_000), c2 = (int)GetNearestLargerPrimeNumber(100_000); //c1 = 137, c2 = 9973;
-        //private int cL = 7;
+        private int c1 = (int)GetNearestLargerPrimeNumber(20_000), c2 = (int)GetNearestLargerPrimeNumber(100_000);
 
         public HashMap(int keysCapacity = 100_000)
         {
-            backingArraySize = (uint)(keysCapacity / loadFactor); //чтобы получить предельный адекватный фактор заполнения
-            backingArraySize = GetNearestLargerPrimeNumber(backingArraySize); //13337
-            //array = new List<KeyValue>((int)backingArraySize);
-            array = new List<KeyValue>(new KeyValue[backingArraySize]);
+            backingArraySize = GetNearestLargerPrimeNumber((uint)(keysCapacity / loadFactor));
+            array = new KeyValue[backingArraySize];
         }
 
         private static uint GetNearestLargerPrimeNumber(uint n)
@@ -192,13 +149,18 @@ namespace S4FB
             return true;
         }
 
+        /// <summary>
+        /// Используем квадратичное пробирование
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="step"></param>
+        /// <returns></returns>
         private int GetArrayIndex(uint key, int step)
         {
             return (int)((key + c1 * step + c2 * step * step) % backingArraySize);
-            //return (int)((key + cL * step) % backingArraySize);
         }
 
-        public int Put(uint key, uint value)
+        public void Put(uint key, uint value)
         {
             int step = 0;
             int startIndex = GetArrayIndex(key, step);
@@ -208,12 +170,12 @@ namespace S4FB
                 if (array[index] == null || array[index].Deleted) // эта ячейка пустая
                 {
                     array[index] = new KeyValue(key, value);
-                    return step;
+                    return;
                 }
                 else if (array[index].Key == key) //перезаписываем значение
                 {
                     array[index].Value = value;
-                    return step;
+                    return;
                 }
                 else // коллизия
                 {
@@ -222,18 +184,12 @@ namespace S4FB
                 }
                 if (index == startIndex) //пришли снова в стартовый индекс
                 {
-                    for (int i = 0; i < backingArraySize; i++)
-                    {
-                        if (array[i] == null || array[i].Deleted)
-                            throw new InvalidOperationException("There are empty slots, but can't reach them");
-                    }
                     throw new InvalidOperationException("No empty slots");
                 }
             }
-            return step;
         }
 
-        public (uint, int) Get(uint key)
+        public uint Get(uint key)
         {
             int step = 0;
             int startIndex = GetArrayIndex(key, step);
@@ -242,28 +198,26 @@ namespace S4FB
             {
                 if (array[index] == null) // не смогли найти
                 {
-                    return (uint.MaxValue, step);
-                    //throw new InvalidOperationException(keyNotFoundMessage);
+                    return uint.MaxValue;
                 }
                 else if (array[index].Key == key)
                 {
-                    return (array[index].Value, step);
+                    return array[index].Value;
                 }
                 else // коллизия
                 {
                     step++;
                     index = GetArrayIndex(key, step);
                 }
-                if (index == startIndex) //пришли снова в стартовый индес
+                if (index == startIndex) //пришли снова в стартовый индекс
                 {
-                    return (uint.MaxValue, step);
-                    //throw new InvalidOperationException(keyNotFoundMessage);
+                    return uint.MaxValue;
                 }
             }
-            return (uint.MaxValue, step);
+            return uint.MaxValue;
         }
 
-        public (uint, int) Delete(uint key)
+        public uint Delete(uint key)
         {
             int step = 0;
             int startIndex = GetArrayIndex(key, step);
@@ -272,27 +226,25 @@ namespace S4FB
             {
                 if (array[index] == null) // не смогли найти
                 {
-                    return (uint.MaxValue, step);
-                    //throw new InvalidOperationException(keyNotFoundMessage);
+                    return uint.MaxValue;
                 }
                 else if (array[index].Key == key)
                 {
                     uint value = array[index].Value;
                     array[index] = new KeyValue(true);
-                    return (value, step);
+                    return value;
                 }
                 else // коллизия
                 {
                     step++;
                     index = GetArrayIndex(key, step);
                 }
-                if (index == startIndex) //пришли снова в стартовый индес
+                if (index == startIndex) //пришли снова в стартовый индекс
                 {
-                    return (uint.MaxValue, step);
-                    //throw new InvalidOperationException(keyNotFoundMessage);
+                    return uint.MaxValue;
                 }
             }
-            return (uint.MaxValue, step);
+            return uint.MaxValue;
         }
 
         public class KeyValue
@@ -332,25 +284,6 @@ namespace S4FB
                 this.iValue = uint.MaxValue;
                 this.deleted = deleted;
             }
-        }
-    }
-
-    class Test
-    {
-        private static Random random = new Random();
-        private const int maxNumber = 1_000_000_000;
-
-        public static List<string> GenerateTestData(int n)
-        {
-            //only put
-            List<string> array = new List<string>(n);
-            for (int i = 0; i < n; i++)
-            {
-                int key = random.Next(0, maxNumber);
-                int value = random.Next(0, maxNumber);
-                array.Add($"put {key} {value}");
-            }
-            return array;
         }
     }
 }

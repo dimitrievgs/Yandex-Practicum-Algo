@@ -1,6 +1,6 @@
 ﻿/*
-ID 65697013
-отчёт https://contest.yandex.ru/contest/24414/run-report/65697013/
+ID 65733239
+отчёт https://contest.yandex.ru/contest/24414/run-report/65733239/
 задача https://contest.yandex.ru/contest/24414/problems/B/
 
 -- ПРИНЦИП РАБОТЫ --
@@ -40,6 +40,8 @@ Put / Get / Delete: O(1) - нет коллизий
 Пространственная сложность (квадратичное пробирование):
 O(n) — размер массива HashMap'а принято брать как M, деленную на константу "фактор заполнения", для открытой адресации её выбирают 
 в определённом дипазоне, например между 0.3 и 0.75.
+-- ПРАВКИ --
+Из метода GetArrayIndex(uint key, int step) выделил отдельно метод GetHash(uint key, int step) с квадратичным пробированием.
 */
 
 using System;
@@ -149,15 +151,21 @@ namespace S4FB
             return true;
         }
 
+        private int GetArrayIndex(uint key, int step)
+        {
+            int hash = GetHash(key, step);
+            return hash % (int)backingArraySize;
+        }
+
         /// <summary>
         /// Используем квадратичное пробирование
         /// </summary>
         /// <param name="key"></param>
         /// <param name="step"></param>
         /// <returns></returns>
-        private int GetArrayIndex(uint key, int step)
+        private int GetHash(uint key, int step)
         {
-            return (int)((key + c1 * step + c2 * step * step) % backingArraySize);
+            return (int)(key + c1 * step + c2 * step * step);
         }
 
         public void Put(uint key, uint value)

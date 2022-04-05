@@ -1,13 +1,13 @@
 ﻿using System;
 
-//namespace S5TB
-//{
+namespace S5TB
+{
     class Solution
     {
-        /*public static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Test();
-        }*/
+        }
 
         public static bool Solve(Node root)
         {
@@ -54,7 +54,7 @@
     }
 
     // закомментируйте перед отправкой
-    /*public class Node
+    public class Node
     {
         public int Value { get; set; }
         public Node Left { get; set; }
@@ -66,5 +66,5 @@
             Left = null;
             Right = null;
         }
-    }*/
-//}
+    }
+}

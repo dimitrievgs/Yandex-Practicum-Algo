@@ -14,6 +14,7 @@ namespace S5TG
         {
             // Your code
             // “ヽ(´▽｀)ノ”
+            return -1;
         }
 
         private static bool CheckTwins(Node node1, Node node2)

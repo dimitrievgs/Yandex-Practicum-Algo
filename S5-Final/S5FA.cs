@@ -1,6 +1,6 @@
 ﻿/*
-ID 66924601
-отчёт https://contest.yandex.ru/contest/24810/run-report/66924601/
+ID 66936024
+отчёт https://contest.yandex.ru/contest/24810/run-report/66936024/
 задача https://contest.yandex.ru/contest/24810/problems/A/
 
 -- ПРИНЦИП РАБОТЫ --
@@ -31,6 +31,15 @@ ID 66924601
 O(N) памяти для промежуточного хранения элементов в бинарной куче
 и O(N) памяти для итогового массива с отсортированными элементами.
 Поэтому пространственная сложность O(N).
+-- ПРАВКИ --
+Не знаю, верно ли я понял комментарии. Да, сейчас увидел, что там выделялся дополнительный 
+массив для считывания экземпляров Intern. Убрал это, теперь считывается прямо в кучу. 
+Так что до этого было по пространственной сложности формально 3 O(n) ~ O(n). 
+Поэтому я оставил блок "Пространственная сложность" без изменения, 
+вроде бы, сейчас он корректен.
+Также подправил для класса Intern метод int CompareTo(object obj):
+там пришлось вернуть else перед throw (замечание к одной из предыдущих финальных задач), 
+чтобы логику не поломать. Лучше ли так, как сейчас сделано?
 */
 
 using System;
@@ -43,12 +52,7 @@ namespace S5FA
         public static void Main(string[] args)
         {
             int n = ReadInt();
-            List<Intern> interns = new List<Intern>();
-            for (int i = 0; i < n; i++)
-                interns.Add(ReadIntern());
-
-            interns = HeapSort(interns);
-
+            List<Intern> interns = InternsHeapSort(n);
             foreach (var intern in interns)
                 Console.WriteLine(intern.Login);
         }
@@ -68,12 +72,12 @@ namespace S5FA
             return new Intern(login, solvedTasksNr, penalty);
         }
 
-        private static List<Intern> HeapSort(List<Intern> array)
+        private static List<Intern> InternsHeapSort(int n)
         {
             BinaryHeap<Intern> heap = new BinaryHeap<Intern>();
 
-            foreach (var item in array)
-                heap.Add(item);
+            for (int i = 0; i < n; i++)
+                heap.Add(ReadIntern());
 
             List<Intern> sortedArray = new List<Intern>();
             while (heap.Size > 0)
@@ -184,19 +188,25 @@ namespace S5FA
 
         public int CompareTo(object obj)
         {
-            if (obj == null) return 1;
-
-            Intern otherIntern = obj as Intern;
-            if (otherIntern != null)
+            int result = 0;
+            if (obj == null)
+                result = 1;
+            else
             {
-                if (this.SolvedTasksNr != otherIntern.SolvedTasksNr)
-                    return otherIntern.SolvedTasksNr.CompareTo(this.SolvedTasksNr);
-                else if (this.Penalty != otherIntern.Penalty)
-                    return this.Penalty.CompareTo(otherIntern.Penalty);
+                Intern otherIntern = obj as Intern;
+                if (otherIntern != null)
+                {
+                    if (this.SolvedTasksNr != otherIntern.SolvedTasksNr)
+                        result = otherIntern.SolvedTasksNr.CompareTo(this.SolvedTasksNr);
+                    else if (this.Penalty != otherIntern.Penalty)
+                        result = this.Penalty.CompareTo(otherIntern.Penalty);
+                    else
+                        result = this.Login.CompareTo(otherIntern.Login);
+                }
                 else
-                    return this.Login.CompareTo(otherIntern.Login);
+                    throw new ArgumentException("Object is not an Intern");
             }
-            throw new ArgumentException("Object is not an Intern");
+            return result;
         }
     }
 }

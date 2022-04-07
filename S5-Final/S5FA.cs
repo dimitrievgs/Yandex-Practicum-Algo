@@ -1,7 +1,7 @@
 ﻿/*
-ID 
-отчёт 
-задача 
+ID 66924601
+отчёт https://contest.yandex.ru/contest/24810/run-report/66924601/
+задача https://contest.yandex.ru/contest/24810/problems/A/
 
 -- ПРИНЦИП РАБОТЫ --
 В задаче нужно реализовать сортировку массива с помощью бинарной кучи.

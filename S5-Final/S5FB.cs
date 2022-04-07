@@ -1,5 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+ID 
+отчёт 
+задача 
+
+-- ПРИНЦИП РАБОТЫ --
+
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+*/
+
+using System;
 
 namespace S5FB
 {
@@ -10,108 +23,57 @@ namespace S5FB
             Test();
         }
 
+        /// <summary>
+        /// Рекурсивное удаление узла из бинарного дерева.
+        /// Время работы алгоритма — O(h).
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static Node Remove(Node root, int key)
         {
-            // Your code
-            // “ヽ(´▽｀)ノ”
-
-            Node current = root;
-            Node currentParent = null;
-            bool currentIsLeftChild = false;
-            while (current.Value != key)
+            if (root == null)
+                return root;
+            if (key < root.Value) // удаляемый элемент находится в левом поддереве текущего поддерева
+                root.Left = Remove(root.Left, key); // нужно рекурсивно удалить элемент из нужного поддерева
+            else if (key > root.Value) // удаляемый элемент находится в правом поддереве текущего поддерева
+                root.Right = Remove(root.Right, key); // нужно рекурсивно удалить элемент из нужного поддерева
+            else if (root.Left != null && root.Right != null)
             {
-                if (key < current.Value)
-                {
-                    currentParent = current;
-                    current = current.Left;
-                    currentIsLeftChild = true;
-                }
-                else if (key > current.Value)
-                {
-                    currentParent = current;
-                    current = current.Right;
-                    currentIsLeftChild = false;
-                }
-                if (current == null) //нет такого узла
-                    return null;
+                // Если удаляемый элемент находится в корне текущего поддерева и имеет два дочерних узла,
+                // то нужно заменить его минимальным элементом из правого поддерева
+                // и рекурсивно удалить этот минимальный элемент из правого поддерева
+                root.Value = Minimum(root.Right).Value;
+                root.Right = Remove(root.Right, root.Value);
             }
-            //сюда попадаем, если нашли узел: current.Value == key
-            if (current.Left == null && current.Right == null) //нет детей у узла, т.е. лист
+            else // если удаляемый элемент имеет один дочерний узел, нужно заменить его потомком
             {
-                if (!currentIsLeftChild)
-                    currentParent.Right = null;
-                else
-                    currentParent.Left = null;
-                //remove the edge from current.parent to current
+                if (root.Left != null)
+                    root = root.Left;
+                else if (root.Right != null)
+                    root = root.Right;
+                else // удаляемый элемент не имеет дочерних узлов
+                    root = null;
             }
-            else if (current.Left == null || current.Right == null) //у узла 1 дочерний
-            {
-                bool hasLeftChild = current.Left != null;
-                if (!currentIsLeftChild)
-                    currentParent.Right = hasLeftChild ? current.Left : current.Right;
-                else
-                    currentParent.Left = hasLeftChild ? current.Left : current.Right;
-                //have current.parent point to current’s child instead of to current
-            }
-            else //у узла 2 дочерних
-            {
-                Node successor = null;
-                if (successor == )
-            }
-
-        }
-
-        /// <summary>
-        /// Функция преемника (successor) узла бинарного дерева поиска
-        /// находит «преемника» — следующего по величине узла в BST.
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        private static Node Successor(Node node)
-        {
-            Node current = null;
-            if (node.Right != null) //случай 1: есть дочерний узел справа
-            {
-                current = node.Right;
-                while (current.Left != null)
-                    current = current.Left;
-                return current;
-            }
-            else //случай 2: node не имеет дочернего узла справа
-            {
-                
-            }
-        }
-
-        /*public static Node Insert(Node root, int key)
-        {
-            InsertNode(root, key);
             return root;
         }
 
-        public static void InsertNode(Node root, int key)
+        /// <summary>
+        /// Чтобы найти минимальный элемент в бинарном дереве поиска, нужно следовать 
+        /// указателям .Left от корня дерева, пока не встретится значение null. 
+        /// Время ее работы O(log(n)), где log(n) — высота дерева.
+        /// <para/>
+        /// Если у вершины есть левое поддерево, то по свойству бинарного дерева поиска в нем хранятся все элементы с меньшим ключом. 
+        /// Если его нет, значит эта вершина и есть минимальная. 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        private static Node Minimum(Node x)
         {
-            if (key >= root.Value)
-            {
-                if (root.Right != null)
-                    InsertNode(root.Right, key);
-                else
-                {
-                    Node node = new Node(key);
-                    root.Right = node;
-                }
-            }
-            else
-            {
-                if (root.Left != null)
-                    InsertNode(root.Left, key);
-                else
-                {
-                    Node node = new Node(key);
-                    root.Left = node;
-                }
-            }
-        }*/
+            if (x.Left == null)
+                return x;
+            return Minimum(x.Left);
+        }
 
         public static void Test()
         {

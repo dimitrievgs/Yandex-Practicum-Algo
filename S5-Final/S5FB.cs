@@ -32,14 +32,14 @@ O(log N) в лучшем случае (сбалансированное дере
 
 using System;
 
-/*namespace S5FB
-{*/
+namespace S5FB
+{
     class Solution
     {
-        /*public static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Test();
-        }*/
+        }
 
         /// <summary>
         /// Рекурсивное удаление узла из бинарного дерева.
@@ -92,8 +92,7 @@ using System;
                 return x;
             return Minimum(x.Left);
         }
-
-        /*
+        
         public static void Test()
         {
             var node1 = new Node(2);
@@ -145,5 +144,5 @@ using System;
             Left = null;
             Right = null;
         }
-    }*/
+    }
 }

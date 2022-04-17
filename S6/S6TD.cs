@@ -144,24 +144,22 @@ namespace S6TD
             var queue = new Queue<Node>();
             previous[node.Value - 1] = null;
             distance[node.Value - 1] = 0;
+            color[node.Value - 1] = NodeColor.Gray;
             queue.Enqueue(node);
 
             while (queue.Count > 0)
             {
                 var v = queue.Dequeue();
-                if (color[v.Value - 1] == NodeColor.White)
+                PrintNodeValue(v);
+                for (int i = 0; i < v.ConnectedNodes.Count; i++)
                 {
-                    color[v.Value - 1] = NodeColor.Gray;
-                    PrintNodeValue(v);
-                    for (int i = 0; i < v.ConnectedNodes.Count; i++)
+                    var w = v.ConnectedNodes[i];
+                    if (color[w.Value - 1] == NodeColor.White)
                     {
-                        var w = v.ConnectedNodes[i];
-                        if (color[w.Value - 1] == NodeColor.White)
-                        {
-                            previous[w.Value - 1] = v;
-                            distance[w.Value - 1] = distance[v.Value - 1] + 1;
-                            queue.Enqueue(w);
-                        }
+                        previous[w.Value - 1] = v;
+                        distance[w.Value - 1] = distance[v.Value - 1] + 1;
+                        color[w.Value - 1] = NodeColor.Gray;
+                        queue.Enqueue(w);
                     }
                 }
                 color[v.Value - 1] = NodeColor.Black;

@@ -105,24 +105,22 @@ namespace S6TE
         private void BFS(Node<int> node, int connComponentIndex)
         {
             var queue = new Queue<Node<int>>();
+            color[node.Value - 1] = NodeColor.Gray;
             queue.Enqueue(node);
             while (queue.Count > 0)
             {
                 var v = queue.Dequeue();
-                if (color[v.Value - 1] == NodeColor.White)
+                connComponent[v.Value - 1] = connComponentIndex;
+                for (int i = 0; i < v.ConnectedNodes.Count; i++)
                 {
-                    color[v.Value - 1] = NodeColor.Gray;
-                    connComponent[v.Value - 1] = connComponentIndex;
-                    for (int i = 0; i < v.ConnectedNodes.Count; i++)
+                    var w = v.ConnectedNodes[i];
+                    if (color[w.Value - 1] == NodeColor.White)
                     {
-                        var w = v.ConnectedNodes[i];
-                        if (color[w.Value - 1] == NodeColor.White)
-                        {
-                            queue.Enqueue(w);
-                        }
+                        color[w.Value - 1] = NodeColor.Gray;
+                        queue.Enqueue(w);
                     }
-                    color[v.Value - 1] = NodeColor.Black;
                 }
+                color[v.Value - 1] = NodeColor.Black;
             }
         }
     }

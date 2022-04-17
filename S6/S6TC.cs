@@ -129,48 +129,33 @@ namespace S6TC
 
         public void DFS()
         {
-            color = new List<NodeColor>(new NodeColor[this.nodesNr]);
-            dFSSortedNodesCount = 0;
-            sB = new StringBuilder();
-            DFSRecursive(startNode);
-            /*for (int i = 0; i < Nodes.Count; i++)
-            {
-                if (Nodes[i].Color == EdgeColor.White)
-                    DFSRecursive(Nodes[i]);
-            }*/
+            DFS(startNode);
         }
 
-        private void DFSRecursive(Node start_vertex)
+        public void DFS(Node node)
         {
-            Stack<Node> stack = new Stack<Node>();
-            stack.Push(start_vertex);
+            color = new List<NodeColor>(new NodeColor[this.nodesNr]);
+            sB = new StringBuilder();
+
+            var stack = new Stack<Node>();
+            stack.Push(node);
             while (stack.Count > 0)
             {
-                // Получаем из стека очередную вершину.
-                // Это может быть как новая вершина, так и уже посещённая однажды.
                 var v = stack.Pop();
                 if (color[v.Value - 1] == NodeColor.White)
                 {
-                    // Красим вершину в серый. И сразу кладём её обратно в стек:
-                    // это позволит алгоритму позднее вспомнить обратный путь по графу.
                     color[v.Value - 1] = NodeColor.Gray;
-                    stack.Push(v);
                     PrintNodeValue(v);
-                    // Теперь добавляем в стек все непосещённые соседние вершины,
-                    // вместо вызова рекурсии
                     for (int i = v.ConnectedNodes.Count - 1; i >= 0; i--)
                     {
                         var w = v.ConnectedNodes[i];
                         if (color[w.Value - 1] == NodeColor.White)
+                        {
                             stack.Push(w);
+                        }
                     }
                 }
-                else if (color[v.Value - 1] == NodeColor.Gray)
-                {
-                    // Серую вершину мы могли получить из стека только на обратном пути.
-                    // Следовательно, её следует перекрасить в чёрный.
-                    color[v.Value - 1] = NodeColor.Black;
-                }
+                color[v.Value - 1] = NodeColor.Black;
             }
         }
 

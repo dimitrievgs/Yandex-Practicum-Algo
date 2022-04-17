@@ -134,35 +134,37 @@ namespace S6TD
             BFS(startNode);
         }
 
-        public void BFS(Node s)
+        public void BFS(Node node)
         {
             color = new List<NodeColor>(new NodeColor[this.nodesNr]);
             previous = new List<Node>(new Node[this.nodesNr]);
             distance = new List<int>(new int[this.nodesNr]);
             sB = new StringBuilder();
 
-            var planned = new Queue<Node>();
-            planned.Enqueue(s);
-            color[s.Value - 1] = NodeColor.Gray;
-            PrintNodeValue(s);
+            var queue = new Queue<Node>();
+            previous[node.Value - 1] = null;
+            distance[node.Value - 1] = 0;
+            queue.Enqueue(node);
 
-            distance[s.Value - 1] = 0;
-            while (planned.Count > 0)
+            while (queue.Count > 0)
             {
-                var u = planned.Dequeue();
-                for (int i = 0; i < u.ConnectedNodes.Count; i++)
+                var v = queue.Dequeue();
+                if (color[v.Value - 1] == NodeColor.White)
                 {
-                    var v = u.ConnectedNodes[i];
-                    if (color[v.Value - 1] == NodeColor.White)
+                    color[v.Value - 1] = NodeColor.Gray;
+                    PrintNodeValue(v);
+                    for (int i = 0; i < v.ConnectedNodes.Count; i++)
                     {
-                        distance[v.Value - 1] = distance[u.Value - 1] + 1;
-                        previous[v.Value - 1] = u;
-                        color[v.Value - 1] = NodeColor.Gray;
-                        planned.Enqueue(v);
-                        PrintNodeValue(v);
+                        var w = v.ConnectedNodes[i];
+                        if (color[w.Value - 1] == NodeColor.White)
+                        {
+                            previous[w.Value - 1] = v;
+                            distance[w.Value - 1] = distance[v.Value - 1] + 1;
+                            queue.Enqueue(w);
+                        }
                     }
                 }
-                color[u.Value - 1] = NodeColor.Black;
+                color[v.Value - 1] = NodeColor.Black;
             }
         }
 

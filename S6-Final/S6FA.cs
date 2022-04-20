@@ -15,11 +15,20 @@ namespace S6FA
             int m = sizes[1];
 
             Graph graph = new Graph(n);
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < m; i++)
             {
                 int[] edge = ReadInts();
                 graph.AddEdge(edge[0], edge[1], edge[2]);
             }
+
+            var maxSpanningTree = graph.GetMaximumSpanningTree();
+            if (maxSpanningTree != null)
+            {
+                int totalWeight = graph.GetTotalEdgesWeight(maxSpanningTree);
+                Console.WriteLine(totalWeight);
+            }
+            else
+                Console.WriteLine("Oops! I did it again");
         }
 
         private static int[] ReadInts()
@@ -35,7 +44,6 @@ namespace S6FA
     {
         private int size;
         private List<Node<int>> Nodes { get; set; }
-        private List<Edge<int>> Edges { get; set; }
 
         public Graph(int size)
         {
@@ -50,68 +58,63 @@ namespace S6FA
             Node<int> nodeOne = Nodes[nodeOneValue - 1];
             Node<int> nodeTwo = Nodes[nodeTwoValue - 1];
             Edge<int> edge = new Edge<int>(nodeOne, nodeTwo, weight);
-            Edges.Add(edge);
+            nodeOne.Edges.Add(edge);
+            nodeTwo.Edges.Add(edge);
         }
 
         List<Edge<int>> maxSpanningTreeEdges;
         BinaryHeap<Edge<int>> edgesToConsider;
-        //List<Node<int>> nodesAdded;
         List<Node<int>> nodesNotAdded;
+        List<bool> nodesAdded;
 
-        List<bool> visited;
-        List<Node<int>> previous;
+        public int GetTotalEdgesWeight(List<Edge<int>> edges)
+        {
+            int weight = 0;
+            foreach (var edge in edges)
+                weight += edge.Weight;
+            return weight;
+        }
 
-        public void GetMaximumSpanningTree()
+        public List<Edge<int>> GetMaximumSpanningTree()
         {
             maxSpanningTreeEdges = new List<Edge<int>>();
             edgesToConsider = new BinaryHeap<Edge<int>>();
-            //nodesAdded = new List<Node<int>>();
             nodesNotAdded = Nodes.ToList();
-
-            visited = new List<bool>(new bool[this.size]);
-            previous = new List<Node<int>>(new Node<int>[this.size]);
+            nodesAdded = new List<bool>(new bool[this.size]);
 
             Node<int> v = Nodes[0];
-            previous[0] = null;
-
-            foreach (var edge in v.Edges)
-                edgesToConsider.Add(edge);
-
+            AddVertexToSpanningTree(v);
             while (nodesNotAdded.Count > 0 && edgesToConsider.Size > 0)
             {
                 var edge = edgesToConsider.PopMax();
                 var edgeNodeOne = edge.Nodes[0];
                 var edgeNodeTwo = edge.Nodes[1];
-                if (visited[edgeNodeOne.Index] && visited[edgeNodeTwo.Index])
-                    continue;
                 Node<int> nextNode = null;
-                if (visited[edgeNodeOne.Index])
+                if (!nodesAdded[edgeNodeOne.Index])
                     nextNode = edgeNodeOne;
-                else if (visited[edgeNodeTwo.Index])
+                else if (!nodesAdded[edgeNodeTwo.Index])
                     nextNode = edgeNodeTwo;
-
-                visited[nextNode.Index] = true;
-                previous[nextNode.Index] = v;
-
-                foreach (var cEdge in v.Edges)
-                {
-                    cEdge.Nodes.Find(n => n != )
-                    edgesToConsider.Add(cEdge);
-                }
+                if (nextNode == null)
+                    continue;
+                maxSpanningTreeEdges.Add(edge);
+                AddVertexToSpanningTree(nextNode);
             }
+            if (nodesNotAdded.Count > 0)
+                return null;
+            else 
+                return maxSpanningTreeEdges;
         }
 
         private void AddVertexToSpanningTree(Node<int> node)
         {
-            nodesAdded.Add(node);
+            nodesAdded[node.Index] = true;
             nodesNotAdded.Remove(node);
             foreach (var cEdge in node.Edges)
             {
                 var otherNode = cEdge.Nodes.Find(n => n != node);
-                if (otherNode.Index)
+                if (otherNode != null && nodesAdded[otherNode.Index] == false)
                     edgesToConsider.Add(cEdge);
             }
-            //...
         }
     }
 
@@ -124,8 +127,6 @@ namespace S6FA
         {
             this.Nodes = new List<Node<T>> { nodeOne, nodeTwo };
             this.Weight = weight;
-            nodeOne.Edges.Add(this);
-            nodeTwo.Edges.Add(this);
         }
 
         public int CompareTo(object obj)
@@ -237,56 +238,4 @@ namespace S6FA
             }
         }
     }
-
-    /*class Intern : IComparable
-    {
-        private string login;
-        private int solvedTasksNr;
-        private int penalty;
-
-        public string Login
-        {
-            get { return login; }
-        }
-
-        public int SolvedTasksNr
-        {
-            get { return solvedTasksNr; }
-        }
-
-        public int Penalty
-        {
-            get { return penalty; }
-        }
-
-        public Intern(string login, int solvedTasksNr, int penalty)
-        {
-            this.login = login;
-            this.solvedTasksNr = solvedTasksNr;
-            this.penalty = penalty;
-        }
-
-        public int CompareTo(object obj)
-        {
-            int result = 0;
-            if (obj == null)
-                result = 1;
-            else
-            {
-                Intern otherIntern = obj as Intern;
-                if (otherIntern != null)
-                {
-                    if (this.SolvedTasksNr != otherIntern.SolvedTasksNr)
-                        result = otherIntern.SolvedTasksNr.CompareTo(this.SolvedTasksNr);
-                    else if (this.Penalty != otherIntern.Penalty)
-                        result = this.Penalty.CompareTo(otherIntern.Penalty);
-                    else
-                        result = this.Login.CompareTo(otherIntern.Login);
-                }
-                else
-                    throw new ArgumentException("Object is not an Intern");
-            }
-            return result;
-        }
-    }*/
 }

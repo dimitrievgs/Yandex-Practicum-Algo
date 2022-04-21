@@ -1,8 +1,44 @@
-﻿using System;
+﻿/*
+ID 67637541
+отчёт https://contest.yandex.ru/contest/25070/run-report/67637541/
+задача https://contest.yandex.ru/contest/25070/problems/B/
+
+-- ПРИНЦИП РАБОТЫ --
+По условиям задачи нужно определить, является ли карта железных дорог оптимальной,
+т.е., что из одного узла в другой можно проехать только дорогами одного типа.
+Задачу можно переформулировать как то, что двум цветам рёбер (R и B) соответствуют
+противоположные направления рёбер.
+Тогда оптимальность карты будет следовать из отсутствия в её графе циклов.
+Циклы ищем, запуская DFS по графу. Если в окрестностях узла есть серые узлы, значит, 
+мы наткнулись на цикл.
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Равносильность двух цветов (типов) дорог и противоположной направленности исходит из
+того, что две дороги (типа R и B) можно свести к двум дорогам, где в одном случае дорога
+идёт из A в B, а в другом из B в A. Таким образом мы получаем цикл. Равносильность?
+1) => Существование двух путей разного цвета позволяет всегда построить цикл.
+2) <= Если у нас существует цикл, то это означает, что есть путь из A в C (где C > A) и путь 
+из C в A. Допустим, ребро из меньшего узла в больший это R, а из большего в меньший это B.
+Тогда если дорога приводит в узел с бОльшим номером, то там должна быть хотя бы одно ребро R,
+иначе (если она состоит только из B) она смогла бы привести только в узел с меньшим номером.
+Аналогично, если дорога ведёт в узел с меньшим номером, то там должна быть хотя бы одно
+ребро B, иначе бы она могла привести только в узел с большим номером. А поскольку у нас есть,
+как минимум, одно ребро R (путь 1) и одно ребро B (путь 2), то либо есть два пути, 
+один только из R, а второй только из B, либо один из этих путей (допустим, из A в C) 
+содержит N путей R и K путей B. В любой случае мы получаем "не оптимальный" граф.
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Определение временной и пространственной сложности сводится к определению п. и в. сложности
+алгоритма DFS по матрице смежности. 
+В случае представления графа в виде матрицы смежности, чтобы найти соседние вершины, 
+нужно просмотреть целиком всю строку матрицы, соответствующую этой вершине. 
+Для каждой из ∣V∣ вершин необходимо выполнить ∣V∣ операций. 
+Тогда временная сложность O(|V|^2).
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+Матрица смежности занимает O(|V|^2), массив цветов вершин O(|V|).
+Отсюда получаем пространственную сложность O(|V|^2).
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S6FB
 {
@@ -10,7 +46,7 @@ namespace S6FB
     {
         public static void Main(string[] args)
         {
-            ushort n = ReadInt(); // количество городов
+            ushort n = ReadInt();
 
             Graph graph = new Graph(n);
             for (int i = 0; i < n - 1; i++)
@@ -40,66 +76,64 @@ namespace S6FB
     class Graph
     {
         private ushort size;
-        private List<Node> Nodes { get; set; }
+        private bool[,] adjacencyMatrix;
 
         public Graph(ushort size)
         {
             this.size = size;
-            Nodes = new List<Node>();
-            for (ushort i = 0; i < size; i++)
-                Nodes.Add(new Node(i));
+            adjacencyMatrix = new bool[size, size];
         }
 
         public void AddEdge(int nodeOneIndex, int nodeTwoIndex, char type)
         {
-            Node nodeOne = Nodes[nodeOneIndex];
-            Node nodeTwo = Nodes[nodeTwoIndex];
             if (type == 'R')
             {
-                nodeOne.ConnectedNodes.Add(nodeTwo);
+                adjacencyMatrix[nodeOneIndex, nodeTwoIndex] = true;
             }
             else
             {
-                nodeTwo.ConnectedNodes.Add(nodeOne);
+                adjacencyMatrix[nodeTwoIndex, nodeOneIndex] = true;
             }
         }
 
-        private List<NodeColor> color;
+        private NodeColor[] color;
 
         public bool DFS()
         {
-            color = new List<NodeColor>(new NodeColor[this.size]);
+            color = new NodeColor[this.size];
             for (int i = 0; i < this.size; i++)
                 if (color[i] == NodeColor.White)
-                    if (!DFS(Nodes[i]))
+                    if (!DFS(i))
                         return false;
             return true;
         }
 
-        public bool DFS(Node node)
+        public bool DFS(int nodeIndex)
         {
-            var stack = new Stack<Node>();
-            stack.Push(node);
+            var stack = new Stack<int>();
+            stack.Push(nodeIndex);
             while (stack.Count > 0)
             {
                 var v = stack.Pop();
-                if (color[v.Index] == NodeColor.White)
+                if (color[v] == NodeColor.White)
                 {
-                    color[v.Index] = NodeColor.Gray;
+                    color[v] = NodeColor.Gray;
                     stack.Push(v);
-                    for (int i = v.ConnectedNodes.Count - 1; i >= 0; i--)
+                    for (int w = size - 1; w >= 0; w--) 
                     {
-                        var w = v.ConnectedNodes[i];
-                        if (color[w.Index] == NodeColor.White)
+                        if (adjacencyMatrix[v, w] == true)
                         {
-                            stack.Push(w);
+                            if (color[w] == NodeColor.White)
+                            {
+                                stack.Push(w);
+                            }
+                            else if (color[w] == NodeColor.Gray)
+                                return false;
                         }
-                        else if (color[w.Index] == NodeColor.Gray)
-                            return false;
                     }
                 }
-                else if (color[v.Index] == NodeColor.Gray)
-                    color[v.Index] = NodeColor.Black;
+                else if (color[v] == NodeColor.Gray)
+                    color[v] = NodeColor.Black;
             }
             return true;
         }
@@ -109,18 +143,6 @@ namespace S6FB
             White,
             Gray,
             Black
-        }
-    }
-
-    class Node
-    {
-        public ushort Index { get; }
-        public List<Node> ConnectedNodes { get; set; }
-
-        public Node(ushort index)
-        {
-            this.Index = index;
-            this.ConnectedNodes = new List<Node>();
         }
     }
 }

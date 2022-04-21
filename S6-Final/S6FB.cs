@@ -10,7 +10,7 @@ namespace S6FB
     {
         public static void Main(string[] args)
         {
-            int n = ReadInt(); // количество городов
+            ushort n = ReadInt(); // количество городов
 
             Graph graph = new Graph(n);
             for (int i = 0; i < n - 1; i++)
@@ -21,13 +21,13 @@ namespace S6FB
             }
 
             bool noCycle = graph.DFS();
-            string mapIsOptimal = noCycle ? "YES": "NO";
+            string mapIsOptimal = noCycle ? "YES" : "NO";
             Console.WriteLine(mapIsOptimal);
         }
 
-        private static int ReadInt()
+        private static ushort ReadInt()
         {
-            return int.Parse(Console.ReadLine());
+            return ushort.Parse(Console.ReadLine());
         }
 
         private static char[] ReadChars()
@@ -39,35 +39,29 @@ namespace S6FB
 
     class Graph
     {
-        private int size;
+        private ushort size;
         private List<Node> Nodes { get; set; }
-        private List<Edge> Edges { get; set; }
 
-        public Graph(int size)
+        public Graph(ushort size)
         {
             this.size = size;
             Nodes = new List<Node>();
-            for (int i = 0; i < size; i++)
+            for (ushort i = 0; i < size; i++)
                 Nodes.Add(new Node(i));
-            Edges = new List<Edge>();
         }
 
         public void AddEdge(int nodeOneIndex, int nodeTwoIndex, char type)
         {
             Node nodeOne = Nodes[nodeOneIndex];
             Node nodeTwo = Nodes[nodeTwoIndex];
-            Edge edge = null;
             if (type == 'R')
             {
-                edge = new Edge(nodeOne, nodeTwo);
-                nodeOne.Edges.Add(edge);
+                nodeOne.ConnectedNodes.Add(nodeTwo);
             }
             else
             {
-                edge = new Edge(nodeTwo, nodeOne);
-                nodeTwo.Edges.Add(edge);
+                nodeTwo.ConnectedNodes.Add(nodeOne);
             }
-            Edges.Add(edge);
         }
 
         private List<NodeColor> color;
@@ -93,9 +87,9 @@ namespace S6FB
                 {
                     color[v.Index] = NodeColor.Gray;
                     stack.Push(v);
-                    for (int i = v.Edges.Count - 1; i >= 0; i--)
+                    for (int i = v.ConnectedNodes.Count - 1; i >= 0; i--)
                     {
-                        var w = v.Edges[i].NodeTo; 
+                        var w = v.ConnectedNodes[i];
                         if (color[w.Index] == NodeColor.White)
                         {
                             stack.Push(w);
@@ -110,7 +104,7 @@ namespace S6FB
             return true;
         }
 
-        public enum NodeColor
+        public enum NodeColor : byte
         {
             White,
             Gray,
@@ -118,36 +112,15 @@ namespace S6FB
         }
     }
 
-    class Edge
-    {
-        private Node nodeFrom, nodeTo;
-
-        public Node NodeFrom
-        {
-            get => nodeFrom;
-        }
-
-        public Node NodeTo
-        {
-            get => nodeTo;
-        }
-
-        public Edge(Node nodeFrom, Node nodeTo)
-        {
-            this.nodeFrom = nodeFrom;
-            this.nodeTo = nodeTo;
-        }
-    }
-
     class Node
     {
-        public int Index { get; }
-        public List<Edge> Edges { get; set; }
+        public ushort Index { get; }
+        public List<Node> ConnectedNodes { get; set; }
 
-        public Node(int index/*, T value*/)
+        public Node(ushort index)
         {
             this.Index = index;
-            this.Edges = new List<Edge>();
+            this.ConnectedNodes = new List<Node>();
         }
     }
 }

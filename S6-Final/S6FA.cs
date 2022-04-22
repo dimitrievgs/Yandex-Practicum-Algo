@@ -1,6 +1,6 @@
 ﻿/*
-ID 67637481
-отчёт https://contest.yandex.ru/contest/25070/run-report/67637481/
+ID 67663119
+отчёт https://contest.yandex.ru/contest/25070/run-report/67663119/
 задача https://contest.yandex.ru/contest/25070/problems/A/
 
 -- ПРИНЦИП РАБОТЫ --
@@ -28,6 +28,12 @@ ID 67637481
 Список ещё не добавленных в остовное дерево вершин nodesNotAdded - O(|V|).
 Хранение рёбер в бинарной куче edgesToConsider - O(|E|).
 Итого пространственная сложность O(|V|+|E|).
+-- ПРАВКИ --
+Убрал else перед "return maxSpanningTreeEdges;", теперь он в конце метода.
+Вместо списка Nodes ввёл NodeOne и NodeTwo. Не могу заранее сказать, 
+какой из них Source, какой Destination, потому просто ввожу NodeOne, NodeTwo.
+Убрал динамический массив, заменил на дву поля, и да, теперь
+325ms / 29.18Mb -> 262ms / 18.63Mb :)
 */
 
 using System;
@@ -117,13 +123,11 @@ namespace S6FA
             while (nodesNotAdded.Count > 0 && edgesToConsider.Size > 0)
             {
                 var edge = edgesToConsider.PopMax();
-                var edgeNodeOne = edge.Nodes[0];
-                var edgeNodeTwo = edge.Nodes[1];
                 Node<int> nextNode = null;
-                if (!nodesAdded[edgeNodeOne.Index])
-                    nextNode = edgeNodeOne;
-                else if (!nodesAdded[edgeNodeTwo.Index])
-                    nextNode = edgeNodeTwo;
+                if (!nodesAdded[edge.NodeOne.Index])
+                    nextNode = edge.NodeOne;
+                else if (!nodesAdded[edge.NodeTwo.Index])
+                    nextNode = edge.NodeTwo;
                 if (nextNode == null)
                     continue;
                 maxSpanningTreeEdges.Add(edge);
@@ -131,8 +135,7 @@ namespace S6FA
             }
             if (nodesNotAdded.Count > 0)
                 return null;
-            else 
-                return maxSpanningTreeEdges;
+            return maxSpanningTreeEdges;
         }
 
         private void AddVertexToSpanningTree(Node<int> node)
@@ -141,7 +144,7 @@ namespace S6FA
             nodesNotAdded.Remove(node);
             foreach (var cEdge in node.Edges)
             {
-                var otherNode = cEdge.Nodes.Find(n => n != node);
+                var otherNode = (cEdge.NodeOne != node) ? cEdge.NodeOne : cEdge.NodeTwo;
                 if (otherNode != null && nodesAdded[otherNode.Index] == false)
                     edgesToConsider.Add(cEdge);
             }
@@ -150,12 +153,14 @@ namespace S6FA
 
     class Edge<T> : IComparable
     {
-        public List<Node<T>> Nodes;
+        public Node<T> NodeOne { get; }
+        public Node<T> NodeTwo { get; }
         public int Weight { get; set; }
 
         public Edge(Node<T> nodeOne, Node<T> nodeTwo, int weight)
         {
-            this.Nodes = new List<Node<T>> { nodeOne, nodeTwo };
+            NodeOne = nodeOne;
+            NodeTwo = nodeTwo;
             this.Weight = weight;
         }
 

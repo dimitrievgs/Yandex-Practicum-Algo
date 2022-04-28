@@ -20,12 +20,9 @@ namespace S7TB
             for (int i = 0; i < n; i++)
                 durations.Add(ReadDuration());
 
-            //writer.Write(maxGain);
             durations.Sort();
-
             List<Duration> durationsOut = new List<Duration>();
-            doSmth(durations, durations[0].Start, 0, durations.Count - 1,
-                durationsOut);
+            GetMaxNumberOfLessons(durations, durations[0].Start, 0, durationsOut);
 
             writer.WriteLine(durationsOut.Count);
             for (int i = 0; i < durationsOut.Count; i++)
@@ -49,17 +46,15 @@ namespace S7TB
             return duration;
         }
 
-        private static void doSmth(List<Duration> durationsIn, Time curTime, int s, int e,
+        private static void GetMaxNumberOfLessons(List<Duration> durationsIn, Time curTime, int s,
             List<Duration> durationsOut)
         {
             //из тех, что не начались, выбираем то, которое закончится раньше всего
-            if (s > e)
+            if (s > durationsIn.Count - 1)
                 return;
             int firstToEndIndex = -1;
-            for (int i = s; i <= e; i++)
+            for (int i = s; i < durationsIn.Count; i++)
             {
-                //var t1 = durationsIn[i].Start.CompareTo(curTime);
-                //var t2 = durationsIn[i].End.CompareTo(durationsIn[firstToEndIndex].End);
                 if (durationsIn[i].Start.CompareTo(curTime) <= 0 //ещё не началось к curTime
                     && (firstToEndIndex == -1 || durationsIn[i].End.CompareTo(durationsIn[firstToEndIndex].End) > 0)) //ищем то, которое закончится раньше других
                     firstToEndIndex = i;
@@ -67,7 +62,7 @@ namespace S7TB
             if (firstToEndIndex >= 0)
             {
                 durationsOut.Add(durationsIn[firstToEndIndex]);
-                doSmth(durationsIn, durationsIn[firstToEndIndex].End, firstToEndIndex + 1, e, durationsOut);
+                GetMaxNumberOfLessons(durationsIn, durationsIn[firstToEndIndex].End, firstToEndIndex + 1, durationsOut);
             }
         }
 
@@ -92,9 +87,9 @@ namespace S7TB
                     Duration otherDuration = obj as Duration;
                     if (otherDuration != null)
                     {
-                        if (this.Start != otherDuration.Start)
+                        if (this.Start.CompareTo(otherDuration.Start) != 0)
                             result = otherDuration.Start.CompareTo(this.Start);
-                        else if (this.End != otherDuration.End)
+                        else if (this.End.CompareTo(otherDuration.End) != 0)
                             result = otherDuration.End.CompareTo(this.End);
                     }
                     else

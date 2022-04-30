@@ -40,19 +40,42 @@ namespace S7TE
                 .ToArray();
         }
 
-        private static int GetMinBanknotesNumber(int moneyAmount, int[] denominations)
+        private static int GetMinBanknotesNumber(int totalMoneyAmount, int[] denominations)
         {
-            int leftMoneyAmount = moneyAmount;
-            int denominationsIndex = 0;
-            int banknotesNumber = 0;
-            while (leftMoneyAmount > 0 && denominationsIndex < denominations.Length)
+            //введём динамику minBanknotesForMoney[i]: в каждой ячейке минимальное кол-во купюр для суммы (i + 1)
+            int[] minBanknotesForMoney = new int[totalMoneyAmount];
+            for (int considMoneyValue = 1; considMoneyValue <= totalMoneyAmount; considMoneyValue++)
             {
-                int extraBanknotes = leftMoneyAmount / denominations[denominationsIndex];
-                leftMoneyAmount = leftMoneyAmount % denominations[denominationsIndex];
-                banknotesNumber += extraBanknotes;
-                denominationsIndex += 1;
+                minBanknotesForMoney[considMoneyValue - 1] = -1;
+                for (int j = 0; j < denominations.Length; j++) //по каждому номиналу банкнот
+                {
+                    int banknoteValue = denominations[j];
+                    if (banknoteValue == considMoneyValue)
+                    {
+                        minBanknotesForMoney[considMoneyValue - 1] = 1;
+                        break;
+                    }
+                    int curDenominationsBanknotesMax = (int)Math.Ceiling(considMoneyValue / (double)banknoteValue);
+                    for (int k = 1; k <= curDenominationsBanknotesMax; k++)
+                    {
+                        int diff = considMoneyValue - k * banknoteValue;
+                        if (diff < 0) //сликшом много вычли
+                            break;
+                        int diffBanknotesNr = diff > 0 ? minBanknotesForMoney[diff - 1] : 0;
+                        if (diffBanknotesNr < 0)
+                            continue; //оставшуюся сумму не набрать банкнотами, попробуем взять ещё одну такую же купюру
+                        //если уже получали кол-во банкнот для данной ячейки (суммы) и текущее k больше, то дальше смотреть смысла нет
+                        if (minBanknotesForMoney[considMoneyValue - 1] > 0 && k >= minBanknotesForMoney[considMoneyValue - 1])
+                            break;
+                        //если мы уже считали кол-во банкнот для данной ячейки, то сравним и оставим наименьшее
+                        minBanknotesForMoney[considMoneyValue - 1] =
+                            (minBanknotesForMoney[considMoneyValue - 1] > 0) ?
+                            Math.Min(k + diffBanknotesNr, minBanknotesForMoney[considMoneyValue - 1]) :
+                            k + diffBanknotesNr;
+                    }
+                }
             }
-            return banknotesNumber;
+            return minBanknotesForMoney[totalMoneyAmount - 1]; //в последней ячейке массива - решение
         }
     }
 }

@@ -55,9 +55,7 @@ namespace S7TI
             {
                 byte[] rowDigits = ReadRow();
                 for (int x = 0; x < colNr; x++)
-                {
                     field[y, x] = rowDigits[x];
-                }
             }
             return field;
         }
@@ -77,10 +75,11 @@ namespace S7TI
 
         private static string GetPath(int rowNr, int colNr, int[,] flowersToPickMatrix)
         {
-            char[] path = new char[rowNr + colNr];
+            char[] path = new char[rowNr + colNr - 2];
             int y = rowNr - 1;
             int x = colNr - 1;
-            int stepIndex = rowNr + colNr - 1;
+            // (colNr - 1) шагов по горизонтали, (rowNr - 1) шагов по вертикали, и ещё -1 т.к. индексация с нуля
+            int stepIndex = rowNr + colNr - 3; 
             while (x > 0 || y > 0)
             {
                 int toBottom = (y > 0) ? flowersToPickMatrix[y - 1, x] : -1;

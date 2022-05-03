@@ -1,6 +1,6 @@
 ﻿/*
-ID 
-отчёт 
+ID 68062323
+отчёт https://contest.yandex.ru/contest/25597/run-report/68062323/
 задача https://contest.yandex.ru/contest/25597/problems/B/
 
 -- ПРИНЦИП РАБОТЫ --

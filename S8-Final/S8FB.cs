@@ -38,7 +38,7 @@ namespace S8FB
                 root.AddWord(word);
             }
 
-            bool result = Process(ref text, root, root, 0);
+            bool result = PaveWithWords(ref text, root, 0);
             writer.WriteLine(result ? "YES" : "NO");
 
             writer.Close();
@@ -50,16 +50,17 @@ namespace S8FB
             return int.Parse(reader.ReadLine());
         }
 
-        private static bool Process(ref string text, TrieNode root, TrieNode subNode, int pos)
+        private static bool PaveWithWords(ref string text, TrieNode root, int pos)
         {
-            bool success = false;
-            Stack<(TrieNode SubNode, int Pos)> stack = new Stack<(TrieNode SubNode, int Pos)>();
-            stack.Push((subNode, pos));
-            while (stack.Count > 0)
+            bool result = false;
+            Queue<(TrieNode IntermNode, int Pos)> queue = new Queue<(TrieNode SubNode, int Pos)>();
+            queue.Enqueue((root, pos));
+            bool[] milestones = new bool[text.Length];
+            while (queue.Count > 0)
             {
-                var branch = stack.Pop();
+                var branch = queue.Dequeue();
                 int i = branch.Pos;
-                TrieNode node = branch.SubNode;
+                TrieNode node = branch.IntermNode;
                 bool reset = false;
                 while (i < text.Length)
                 {
@@ -74,24 +75,31 @@ namespace S8FB
                     {
                         if (node.Terminal == true)
                         {
-                            if (node.Childs.Count > 0) //тут продолжаем идти в подузлы без ресета (спускаем в рекурсию); точка бифуркации, слов гипотетически подходит > 1
+                            if (node.Childs.Count > 0) //точка ветвления, слов гипотетически подходит > 1, потому создаём новую ветвь для проверки следующих терминальных узлов
+                                queue.Enqueue((node, i + 1));
+                            if (milestones[i] == false)
                             {
-                                stack.Push((node, i + 1));
+                                milestones[i] = true; //до сюда есть решение, как минумум одно
+                                reset = true; //остаёмся в этой ветви, идём дальше прикладывать следующее слово
                             }
-                            reset = true; //иначе идём дальше
+                            else //отсюда уже искали решение
+                            {
+                                //дальше смысла смотреть эту ветвь нет, от этой позиции уже смотрели
+                                //переходим к следующей ветви
+                                break; 
+                            }
                         }
                     }
                     else
-                    {
                         break; //не смогли замостить дальше словами
-                    }
                     i++;
                 }
-                success = node != null && node.Terminal == true;
-                if (success)
+                //дошли до последней позиции в строке и успешно сопоставили терминальному узлу
+                result = i == text.Length && node != null && node.Terminal == true; 
+                if (result)
                     break; //если сюда дошли, значит, замостили словами полностью
             }
-            return success;
+            return result;
         }
     }
 
@@ -110,29 +118,23 @@ namespace S8FB
         public void AddWord(string s)
         {
             TrieNode node;
-            Childs.TryGetValue(s[0], out node); //Childs.FindIndex(o => o.Value == s[0]);
+            Childs.TryGetValue(s[0], out node);
             if (node == null)
             {
                 node = new TrieNode(s[0]);
-                Childs.Add(s[0], node); //.Add(new TrieNode(s[0]));
-                //childIndex = Childs.Count - 1;
+                Childs.Add(s[0], node);
             }
-
             if (s.Length > 1)
-            {
                 node.AddWord(s.Substring(1));
-            }
             else
-            {
                 node.Terminal = true;
-            }
         }
 
         public TrieNode GetChild(char value)
         {
             TrieNode node;
             Childs.TryGetValue(value, out node);
-            return node; // Childs.Find(o => o.Value == value);
+            return node;
         }
     }
 }

@@ -52,36 +52,46 @@ namespace S8FB
 
         private static bool Process(ref string text, TrieNode root, TrieNode subNode, int pos)
         {
-            int i = pos;
-            TrieNode node = subNode;
-            bool reset = false;
-            while (i < text.Length)
+            bool success = false;
+            Stack<(TrieNode SubNode, int Pos)> stack = new Stack<(TrieNode SubNode, int Pos)>();
+            stack.Push((subNode, pos));
+            while (stack.Count > 0)
             {
-                char c = text[i];
-                if (reset)
+                var branch = stack.Pop();
+                int i = branch.Pos;
+                TrieNode node = branch.SubNode;
+                bool reset = false;
+                while (i < text.Length)
                 {
-                    node = root;
-                    reset = false;
-                }
-                node = node.GetChild(c);
-                if (node != null)
-                {
-                    if (node.Terminal == true)
+                    char c = text[i];
+                    if (reset)
                     {
-                        if (node.Childs.Count > 0) //тут продолжаем идти в подузлы без ресета (спускаем в рекурсию); точка бифуркации, слов гипотетически подходит > 1
-                        {
-                            bool result = Process(ref text, root, node, i + 1);
-                            if (result == true)
-                                return true;
-                        }
-                        reset = true; //иначе идёи дальше
+                        node = root;
+                        reset = false;
                     }
+                    node = node.GetChild(c);
+                    if (node != null)
+                    {
+                        if (node.Terminal == true)
+                        {
+                            if (node.Childs.Count > 0) //тут продолжаем идти в подузлы без ресета (спускаем в рекурсию); точка бифуркации, слов гипотетически подходит > 1
+                            {
+                                stack.Push((node, i + 1));
+                            }
+                            reset = true; //иначе идём дальше
+                        }
+                    }
+                    else
+                    {
+                        break; //не смогли замостить дальше словами
+                    }
+                    i++;
                 }
-                else
-                    return false;
-                i++;
+                success = node != null && node.Terminal == true;
+                if (success)
+                    break; //если сюда дошли, значит, замостили словами полностью
             }
-            return node != null && node.Terminal == true;
+            return success;
         }
     }
 

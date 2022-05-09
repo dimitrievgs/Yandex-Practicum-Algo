@@ -98,42 +98,41 @@ namespace S8FB
     class TrieNode
     {
         public char Value { get; set; }
-        public List<TrieNode> Childs { get; set; }
+        public Dictionary<char, TrieNode> Childs { get; set; }
         public bool Terminal { get; set; }
 
         public TrieNode(char value)
         {
             Value = value;
-            Childs = new List<TrieNode>();
+            Childs = new Dictionary<char, TrieNode>();
         }
 
         public void AddWord(string s)
         {
-            int childIndex = Childs.FindIndex(o => o.Value == s[0]);
-            if (childIndex == -1)
+            TrieNode node;
+            Childs.TryGetValue(s[0], out node); //Childs.FindIndex(o => o.Value == s[0]);
+            if (node == null)
             {
-                Childs.Add(new TrieNode(s[0]));
-                childIndex = Childs.Count - 1;
+                node = new TrieNode(s[0]);
+                Childs.Add(s[0], node); //.Add(new TrieNode(s[0]));
+                //childIndex = Childs.Count - 1;
             }
 
             if (s.Length > 1)
             {
-                Childs[childIndex].AddWord(s.Substring(1));
+                node.AddWord(s.Substring(1));
             }
             else
             {
-                Childs[childIndex].Terminal = true;
+                node.Terminal = true;
             }
         }
 
         public TrieNode GetChild(char value)
         {
-            return Childs.Find(o => o.Value == value);
-        }
-
-        public List<TrieNode> GetChilds(char value)
-        {
-            return Childs.FindAll(o => o.Value == value);
+            TrieNode node;
+            Childs.TryGetValue(value, out node);
+            return node; // Childs.Find(o => o.Value == value);
         }
     }
 }

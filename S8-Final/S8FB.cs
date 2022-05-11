@@ -1,6 +1,6 @@
 ﻿/*
-ID 68248851
-отчёт https://contest.yandex.ru/contest/26133/run-report/68248851/
+ID 
+отчёт 
 задача https://contest.yandex.ru/contest/26133/problems/B/
 
 -- ПРИНЦИП РАБОТЫ --
@@ -48,7 +48,11 @@ text2.Substring(0,N)
 Хранение точек ветвлений в очереди составляет в худшем случае O(N).
 Хранение массива milestones занимает O(N).
 Итого пространственная сложность O(sum_of_words_length + N).
-*/
+-- ПРАВКИ --
+Создал отдельный класс Trie, туда перенёс метод AddWord(...), внутри метода рекурсию заменил на итеративный алгоритм.
+Внутри TrieNode поле со значением символа убрал, оставил его в качестве ключа хеш-таблицы.
+
+ */
 
 using System;
 using System.Collections.Generic;
@@ -68,14 +72,14 @@ namespace S8FB
 
             string text = reader.ReadLine();
             int n = ReadInt();
-            TrieNode root = new TrieNode('.');
+            Trie trie = new Trie();
             for (int i = 0; i < n; i++)
             {
                 string word = reader.ReadLine();
-                root.AddWord(word);
+                trie.AddWord(word);
             }
 
-            bool result = PaveWithWords(ref text, root, 0);
+            bool result = PaveWithWords(ref text, trie, 0);
             writer.WriteLine(result ? "YES" : "NO");
 
             writer.Close();
@@ -87,11 +91,11 @@ namespace S8FB
             return int.Parse(reader.ReadLine());
         }
 
-        private static bool PaveWithWords(ref string text, TrieNode root, int pos)
+        private static bool PaveWithWords(ref string text, Trie trie, int pos)
         {
             bool result = false;
             Queue<(TrieNode IntermNode, int Pos)> queue = new Queue<(TrieNode SubNode, int Pos)>();
-            queue.Enqueue((root, pos));
+            queue.Enqueue((trie.root, pos));
             bool[] milestones = new bool[text.Length];
             while (queue.Count > 0)
             {
@@ -104,7 +108,7 @@ namespace S8FB
                     char c = text[i];
                     if (reset)
                     {
-                        node = root;
+                        node = trie.root;
                         reset = false;
                     }
                     node = node.GetChild(c);
@@ -140,37 +144,45 @@ namespace S8FB
         }
     }
 
-    class TrieNode
+    class Trie
     {
-        public char Value { get; set; }
-        public Dictionary<char, TrieNode> Childs { get; set; }
-        public bool Terminal { get; set; }
+        public TrieNode root;
 
-        public TrieNode(char value)
+        public Trie()
         {
-            Value = value;
-            Childs = new Dictionary<char, TrieNode>();
+            root = new TrieNode();
         }
 
         public void AddWord(string s)
         {
-            TrieNode node;
-            Childs.TryGetValue(s[0], out node);
-            if (node == null)
+            TrieNode current = root, next;
+            for (int i = 0; i < s.Length; i++)
             {
-                node = new TrieNode(s[0]);
-                Childs.Add(s[0], node);
+                current.Childs.TryGetValue(s[i], out next);
+                if (next == null)
+                {
+                    next = new TrieNode();
+                    current.Childs.Add(s[i], next);
+                }
+                current = next;
             }
-            if (s.Length > 1)
-                node.AddWord(s.Substring(1));
-            else
-                node.Terminal = true;
+            current.Terminal = true;
+        }
+    }
+
+    class TrieNode
+    {
+        public Dictionary<char, TrieNode> Childs { get; set; }
+        public bool Terminal { get; set; }
+
+        public TrieNode()
+        {
+            Childs = new Dictionary<char, TrieNode>();
         }
 
         public TrieNode GetChild(char value)
         {
-            TrieNode node;
-            Childs.TryGetValue(value, out node);
+            Childs.TryGetValue(value, out TrieNode node);
             return node;
         }
     }

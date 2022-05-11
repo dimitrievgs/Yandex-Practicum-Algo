@@ -1,6 +1,6 @@
 ﻿/*
-ID 68246223
-отчёт https://contest.yandex.ru/contest/26133/run-report/68246223/
+ID 68323653
+отчёт https://contest.yandex.ru/contest/26133/run-report/68323653/
 задача https://contest.yandex.ru/contest/26133/problems/A/
 
 -- ПРИНЦИП РАБОТЫ --
@@ -28,6 +28,11 @@ ID 68246223
 за счёт кратной (т.е. x константа) распаковки содержимого внутри скобок '[' и ']' и 
 хранения распакованных строк в массиве, дополнительно рекурсия на каждой распаковке 
 для максимальной степени вложенности также потребует дополнительно O(max_word.Length) памяти.
+-- ПРАВКИ --
+Убрал вторым параметром в GetMaxPrefixLength(...) количество слов, теперь оно берётся из words.Length.
+В цикле на считывание из консоли слов попутно считается минимальный размер слова minWordLength.
+minWordLength передаётся в качестве параметра в GetMaxPrefixLength(...), убрал условие на завершение 
+метода при (words[k].Length - 1 < j).
 */
 
 using System;
@@ -48,13 +53,15 @@ namespace S8FA
 
             int n = ReadInt();
             string[] words = new string[n];
+            int minWordLength = int.MaxValue;
             for (int i = 0; i < n; i++)
             {
                 string word = reader.ReadLine();
                 words[i] = ReadPackedString(ref word, 0).Str.ToString();
+                minWordLength = Math.Min(minWordLength, words[i].Length);
             }
 
-            string maxCommonPrefix = words[0].Substring(0, GetMaxPrefixLength(words, n));
+            string maxCommonPrefix = words[0].Substring(0, GetMaxPrefixLength(words, minWordLength));
             writer.WriteLine(maxCommonPrefix);
 
             writer.Close();
@@ -108,27 +115,21 @@ namespace S8FA
             return (sOut, i);
         }
 
-        private static int GetMaxPrefixLength(string[] words, int n)
+        private static int GetMaxPrefixLength(string[] words, int minWordLength)
         {
             bool maxPrefixFound = false;
             int prefixLength = 0;
-            for (int j = 0; j < words[0].Length; j++) //индексы внутри строки
+            for (int j = 0; j < minWordLength; j++) //индексы внутри строки
             {
                 if (maxPrefixFound)
                     break;
                 char c = '#';
-                for (int k = 0; k < n; k++) //по всем словам
+                for (int k = 0; k < words.Length; k++) //по всем словам
                 {
-                    if (words[k].Length - 1 < j)
-                    {
-                        return prefixLength;
-                    }
                     if (k == 0)
-                        c = words[0][j];
+                        c = words[0][j]; //здесь инициализируем символ для проверки всех остальных строк по этому индексу
                     else if (words[k][j] != c)
-                    {
                         return prefixLength;
-                    }
                 }
                 prefixLength++;
             }

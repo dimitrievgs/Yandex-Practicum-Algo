@@ -93,54 +93,26 @@ namespace S8FB
 
         private static bool PaveWithWords(ref string text, Trie trie, int pos)
         {
-            bool result = false;
-            Queue<(TrieNode IntermNode, int Pos)> queue = new Queue<(TrieNode SubNode, int Pos)>();
-            queue.Enqueue((trie.root, pos));
-            bool[] milestones = new bool[text.Length];
-            while (queue.Count > 0)
+            bool[] dp = new bool[text.Length + 1];
+            dp[0] = true;
+            for (int i = 0; i < text.Length; i++)
             {
-                var branch = queue.Dequeue();
-                int i = branch.Pos;
-                TrieNode node = branch.IntermNode;
-                bool reset = false;
-                while (i < text.Length)
-                {
-                    char c = text[i];
-                    if (reset)
+                if (dp[i] == true) // смогли ли выстроить словами до предыдущего символа, для 0-го автоматом true
+                { 
+                    int j = 0;
+                    // от каждого индекса, куда до этого смогли проложить слова, кладём буквы, пока кладутся, если
+                    // где-то встречаются терминальные узлы, то заносим в dp[i + 1 + j] = true, т.е. туда можно прокинуть ещё слово
+                    var current = trie.root; 
+                    while (current != null && (i + j) < text.Length)
                     {
-                        node = trie.root;
-                        reset = false;
+                        current = current.GetChild(text[i + j]);
+                        if (current != null && current.Terminal == true)
+                            dp[i + 1 + j] = true;
+                        j++;
                     }
-                    node = node.GetChild(c);
-                    if (node != null)
-                    {
-                        if (node.Terminal == true)
-                        {
-                            if (node.Childs.Count > 0) //точка ветвления, слов гипотетически подходит > 1, потому создаём новую ветвь для проверки следующих терминальных узлов
-                                queue.Enqueue((node, i + 1));
-                            if (milestones[i] == false)
-                            {
-                                milestones[i] = true; //до сюда есть решение, как минумум одно
-                                reset = true; //остаёмся в этой ветви, идём дальше прикладывать следующее слово
-                            }
-                            else //отсюда уже искали решение
-                            {
-                                //дальше смысла смотреть эту ветвь нет, от этой позиции уже смотрели
-                                //переходим к следующей ветви
-                                break; 
-                            }
-                        }
-                    }
-                    else
-                        break; //не смогли замостить дальше словами
-                    i++;
                 }
-                //дошли до последней позиции в строке и успешно сопоставили терминальному узлу
-                result = i == text.Length && node != null && node.Terminal == true; 
-                if (result)
-                    break; //если сюда дошли, значит, замостили словами полностью
             }
-            return result;
+            return dp[text.Length];
         }
     }
 
